@@ -1,0 +1,19 @@
+#Change the entire path to only last name
+pathname=$list_file
+echo $(basename $pathname) > list_file_name.txt
+list_file_name=`cat list_file_name.txt`
+
+#Change the entire path to only last name
+pathname=$fastafile
+echo $(basename $pathname) > fastafile_name.txt
+fastafile_name=`cat fastafile_name.txt`
+
+rm -rf fastafile_name.txt list_file_name.txt
+
+if [ -s $list_file_name.$fastafile_name.extracted_seqs.fasta ]
+
+echo    "--------------------------------------------------------------------------------"
+echo	"The extracted sequences are written in${textreset} $list_file_name.$fastafile_name.extracted_seqs.fasta${green}"    
+echo    "${yellow}NOTE: Results are available at${textreset} $selected_dir${green}"
+echo    "--------------------------------------------------------------------------------"
+else
