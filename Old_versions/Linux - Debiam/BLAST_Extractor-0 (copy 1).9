@@ -1,0 +1,2423 @@
+#!/bin/bash
+#This script will extract only the sequences with Blastx/Blastn top hits, with the percentage specified by user
+clear
+textreset=$(tput sgr0) 
+red=$(tput setaf 1)
+green=$(tput setaf 2) 
+orange=$(tput setaf 8) 
+
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                             Working directory                                  "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "What is the directory that you are working, Leave blank to use default"
+	echo "NOTE: Default is your Home folder"
+		echo "${green}"
+		read work_dir
+		echo "${textreset}"
+
+if [ ! -d $work_dir ];
+then
+echo "${red}"
+while 
+read -p 'Try again: ' work_dir && [ ! -d $work_dir ]; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$work_dir${red} IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER!
+-------------------------------------------------------------
+"
+done
+fi
+cd $work_dir
+
+clear
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                         Use BLAST or just extract?                             "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Do you want to perform a BLAST search, BLAST and extract your sequences or just 
+extract sequences?
+
+${green} 1${textreset} to perform a BLAST search
+${green} 2${textreset} to perform extraction and BLAST
+${green} 3${textreset} to perform extraction without BLAST (BLAST results file in tabular format is required${green}[outfmt6]${textreset})
+${green}"
+		echo "${green}"
+		read decision
+		echo "${textreset}"
+
+
+if [ "$decision" != "1" ] && [ "$decision" != "2" ] && [ "$decision" != "3" ]
+then
+echo "${red}"
+
+while 
+read -p 'Try again: ' decision && [ "$decision" != "1" ] && [ "$decision" != "2" ] && [ "$decision" != "3" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$decision${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+clear
+						#ONLY BLAST  
+if [ $decision = 1 ]
+then
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Blast search                                   "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Which BLAST do you want to use?
+${green} 1${textreset} to run BLASTX
+${green} 2${textreset} to run BLASTN"
+		echo "${green}"
+		read blast
+		echo "${textreset}"
+if [ "$blast" != "1" ] && [ "$blast" != "2" ]
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' blast && [ "$blast" != "1" ] && [ "$blast" != "2" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$blast${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+clear
+
+blastname=""
+if [ $blast = "1" ]; then
+	blastname="BLASTX"
+fi
+
+if [ $blast = "2" ]; then
+	blastname="BLASTN"
+fi
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ $blastname Extractor 2.9 [BETA] ___________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Fasta to query                                 "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Enter the name of fasta file to run $blastname (example.fasta):"
+	echo "${green}"
+		read fastafile
+		echo ""
+
+if [ -f $fastafile ];
+then
+echo "Fasta file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' fastafile && [ ! -f $fastafile ] ; do
+echo "${red}
+--------------------------------------------------------------------------
+THE FILE ${textreset}$fastafile${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$fastafile${red}""
+--------------------------------------------------------------------------
+"
+done
+fi
+
+clear
+#------------------------------------------------------------------------------------------
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "             Create $blastname database or use your own database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "${green} 1${textreset} to create a new database
+${green} 2${textreset} to use a preexisting database"
+		echo "${green}"
+		read db_opt
+		echo "${textreset}"
+if [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ]
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' db_opt && [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$db_opt${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+clear
+
+if [ $db_opt = 2 ]
+then
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "            What is your $blastname database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "Please enter the name of the pre-formated $blastname database?"
+		echo "${green}"
+		read own_db
+		echo "${textreset}"
+if [ ! -f $own_db ] ;
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' own_db && [ ! -f $own_db ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$own_db${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+
+if [ $db_opt = 2 ]
+then	createdb=$own_db
+
+fi
+clear
+
+else 
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                           Create database to $blastname                        "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Enter the name of file to create the $blastname database:"	
+		echo "${green}"
+		read createdb
+		echo "${textreset}"
+
+if [ -f $createdb ];
+then
+echo "Database file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' createdb && [ ! -f $createdb ] ; do
+echo "${red}
+-------------------------------------------------------------
+THE FILE ${textreset}$createdb${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$createdb${red}""
+-------------------------------------------------------------
+"
+done
+fi
+fi
+
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                                $blastname E-value                                   "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Click the link bellow to learn more about E-value." 
+echo "https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=FAQ#expect"
+	echo ""
+echo "Enter the Expected value(E-value) (example 1e-3):"	
+	echo "${green}"
+	read evalue
+	echo "${textreset}"
+	
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "				 CPU Threads  					 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "How many CPU-cores do you want to use in the $blastname search? (example 4)"	
+	echo "${green}"
+	read threads
+	echo "${textreset}"
+
+echo "${red}"
+re='^[0-9]+$'
+if ! [[ $threads =~ $re ]]
+then
+while 
+read  -p 'Error, use only numbers: ' threads && ! [[ $threads =~ $re ]] ; do
+echo "${red}
+------------------------------------------------------------------
+ERROR!${textreset} $threads${red} IS NOT A VALID OPTION, PLEASE ONLY NUMBERS IN THIS FIELD!
+------------------------------------------------------------------
+"
+done
+fi
+
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "		     Output file fo $blastname results				 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "What is the format of $blastname results output file?
+Type${green} help${textreset} to see all available output formats!"	
+	echo "${green}"
+	read outfmt
+	echo "${textreset}"
+
+if [ $outfmt = "help" ]; then
+
+echo "${textreset}ALL AVAILABLE FORMAT OPTIONS:
+	0 = pairwise,
+	1 = query-anchored showing identities,
+	2 = query-anchored no identities,
+	3 = flat query-anchored, show identities,
+	4 = flat query-anchored, no identities,
+	5 = XML Blast output,
+	6 = tabular,
+	7 = tabular with comment lines,
+	8 = Text ASN.1,
+	9 = Binary ASN.1,
+	10 = Comma-separated values,
+	11 = BLAST archive format (ASN.1) 
+"
+echo "Options${green} 6 ${textreset},${green} 7${textreset}, and${green} 10${textreset} can be additionally configured, type${green} more ${textreset}to see additional options:
+${green}"
+	read more_help
+
+		if [ $more_help = more ]
+			then 
+			echo "${textreset} 
+Options${green} 6 ${textreset},${green} 7${textreset}, and${green} 10${textreset} can be additionally configured to produce a custom format specified by space delimited format specifiers.
+The supported format specifiers are:
+  	    qseqid means Query Seq-id
+   	       qgi means Query GI
+   	      qacc means Query accesion
+   	   qaccver means Query accesion.version
+   	      qlen means Query sequence length
+   	    sseqid means Subject Seq-id
+   	 sallseqid means All subject Seq-id(s), separated by a ';'
+   	       sgi means Subject GI
+   	    sallgi means All subject GIs
+   	      sacc means Subject accession
+   	   saccver means Subject accession.version
+   	   sallacc means All subject accessions
+   	      slen means Subject sequence length
+   	    qstart means Start of alignment in query
+   	      qend means End of alignment in query
+   	    sstart means Start of alignment in subject
+   	      send means End of alignment in subject
+   	      qseq means Aligned part of query sequence
+   	      sseq means Aligned part of subject sequence
+   	    evalue means Expect value
+   	  bitscore means Bit score
+   	     score means Raw score
+   	    length means Alignment length
+   	    pident means Percentage of identical matches
+   	    nident means Number of identical matches
+   	  mismatch means Number of mismatches
+   	  positive means Number of positive-scoring matches
+   	   gapopen means Number of gap openings
+   	      gaps means Total number of gaps
+   	      ppos means Percentage of positive-scoring matches
+   	    frames means Query and subject frames separated by a '/'
+   	    qframe means Query frame
+   	    sframe means Subject frame
+   	      btop means Blast traceback operations (BTOP)
+   	   staxids means Subject Taxonomy ID(s), separated by a ';'
+   	 sscinames means Subject Scientific Name(s), separated by a ';'
+   	 scomnames means Subject Common Name(s), separated by a ';'
+       sblastnames means Subject Blast Name(s), separated by a ';'  (in alphabetical order)
+   	sskingdoms means Subject Super Kingdom(s), separated by a ';'(in alphabetical order) 
+   	    stitle means Subject Title
+   	salltitles means All Subject Title(s), separated by a '<>'
+   	   sstrand means Subject Strand
+   	     qcovs means Query Coverage Per Subject
+   	   qcovhsp means Query Coverage Per HSP
+  
+if the addtional options are not provided, the default value is:
+   'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore'.
+
+SEE BLAST DOCUMENTATION TO LEARN MORE
+"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+	else
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+	fi
+fi
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "	   Do you want to add other $blastname parameters?[optional]		 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Insert other $blastname parameters bellow separated by spaces and starting 
+with dashes, or leave blank to skip (Example: -max_target_seqs 1)"	
+	echo "${textreset}"
+	read other_blast_param
+	echo "${green}"
+
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+if [ $blast = 1 ]
+then	dbtype=prot 
+
+fi
+
+if [ $blast = 2 ]
+then	dbtype=nucl
+
+fi
+
+if [ $db_opt = 2 ]
+then
+echo "${green}"
+	echo    "--------------------------------------------------------------------------------"
+	echo	"		     Using $createdb as $blastname database!			 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${textreset}"
+
+else 
+
+echo	""
+echo	"${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "  			     Formatting $blastname database 				 "
+echo    "--------------------------------------------------------------------------------"
+echo	"Running!"
+echo	""
+echo	"makeblastdb -in $createdb -dbtype $dbtype"
+echo	"-------------------------------------------------------------------------------"
+
+if makeblastdb -in $createdb -dbtype $dbtype
+then 
+	echo    "--------------------------------------------------------------------------------"
+	echo	"			Database formatted successfully!!				 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${textreset}"
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR!"
+	echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+fi
+fi
+echo 	"${textreset}
+	------------------------------------------------------------------------
+	$blastname options 
+	------------------------------------------------------------------------
+
+	-query${green} $fastafile${textreset}
+	-db${green} $createdb${textreset}
+	-E-value${green} $evalue${textreset}
+	-num_threads${green} $threads${textreset}
+	-outfmt${green} $outfmt ${textreset}
+	------------------------------------------------------------------------
+	Other BLAST parameters [OPTIONAL]:
+	------------------------------------------------------------------------
+	$other_blast_param
+
+	------------------------------------------------------------------------"
+
+if [ $blast = "1" ]; then
+	blast_0="blastx"
+	fi
+
+if  [ $blast = "2" ]; then
+	blast_0="blastn"
+	fi
+if [ $db_opt = 2 ]
+then
+$blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue.outfmt$outfmt -evalue $evalue -num_threads $threads -outfmt $outfmt $other_blast_param
+else
+
+if $blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue.outfmt$outfmt -evalue $evalue -num_threads $threads -outfmt $outfmt $other_blast_param
+	then
+echo 	"${textreset}"
+echo	""
+echo    ""
+echo    "Running $blastname
+                                 "
+echo	"$blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue.outfmt$outfmt 
+-evalue $evalue -num_threads $threads -outfmt $outfmt $other_blast_param"
+echo    ""
+	echo "$blastname OK!"
+else
+echo "${red}ERROR BLAST COMMANDS FAILED!
+PLEASE VERIFY IF YOU ADD THE CORRECT OPTIONS IN $blastname!!!!${textreset} OPTIONS"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+fi
+fi
+
+
+echo	"${green}================================================================================"
+echo 	""
+echo    "=========================== BLAST Extractor 0.9 ================================"
+echo 	""
+echo	"================================================================================"
+echo    "============= Laboratório de Biologia Molecular e Neuroecologia ================"
+echo	'============== INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança ================'
+echo	"================================================================================"
+echo '				 ___        ______    __     __
+				|   |      |	  \  |  \   |  | 
+				|   |      |   D   ) |   \  |  | 
+				|   |      |      /  |    \ |  | 
+				|   |____  |      \  |  |\ \|  | 
+				|        | |   D   ) |  | \    |  
+				|________| |______/  |__|  \___|
+'                   
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "--------------------------------------------------------------------------------"
+echo	"	The results of $blastname are written in ${textreset}$work_dir$blast_0-evalue_$evalue.outfmt$outfmt${green}"
+echo	"The files of $blastname database are available in ${textreset}$work_dir${green}."
+echo    "--------------------------------------------------------------------------------"
+
+fi
+
+
+									# BLAST AND EXTRACTION 
+if [ $decision = 2 ]
+then
+clear
+
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Blast search                                   "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Which BLAST do you want to use?
+${green} 1${textreset} to run BLASTX
+${green} 2${textreset} to run BLASTN"
+		echo "${green}"
+		read blast
+if [ "$blast" != "1" ] && [ "$blast" != "2" ]
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' blast && [ "$blast" != "1" ] && [ "$blast" != "2" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$blast${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+blastname=""
+if [ $blast = "1" ]; then
+	blastname="BLASTX"
+fi
+
+if [ $blast = "2" ]; then
+	blastname="BLASTN"
+fi
+
+
+clear
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Fasta to query                                 "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Enter the name of fasta file to run${green} $blastname ${textreset}(example.fasta)"
+	echo "${green}"
+		read fastafile
+		echo ""
+if [ -f $fastafile ];
+then
+echo "Fasta file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' fastafile && [ ! -f $fastafile ] ; do
+echo "${red}
+--------------------------------------------------------------------------
+THE FILE ${textreset}$fastafile${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$fastafile${red}""
+--------------------------------------------------------------------------
+"
+done
+fi
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "             Format $blastname database or use your already formatted database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "${green} 1${textreset} to format a new database
+${green} 2${textreset} to use a preexisting database"
+		echo "${green}"
+		read db_opt
+		echo "${textreset}"
+if [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ]
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' db_opt && [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$db_opt${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+clear
+
+if [ $db_opt = 2 ]
+then
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "            What is your $blastname database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "Please enter the name of the pre-formated $blastname database?"
+		echo "${green}"
+		read own_db
+		echo "${textreset}"
+if [ ! -f $own_db ] ;
+
+then
+echo "${red}"
+
+while 
+read  -p 'Try again: ' own_db && [ ! -f $own_db ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$own_db${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+
+if [ $db_opt = 2 ]
+then	createdb=$own_db
+
+fi
+clear
+
+else 
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                           Format database to $blastname                        "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Enter the name of file to format $blastname database:"	
+		echo "${green}"
+		read createdb
+		echo "${textreset}"
+
+if [ -f $createdb ];
+then
+echo "Database file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' createdb && [ ! -f $createdb ] ; do
+echo "${red}
+-------------------------------------------------------------
+THE FILE ${textreset}$createdb${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$createdb${red}""
+-------------------------------------------------------------
+"
+done
+fi
+fi
+
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                                Blast E-value                                   "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Click the link bellow to learn more about E-value." 
+echo "https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=FAQ#expect"
+	echo ""
+echo "Enter the Expected value(E-value) (example 1e-3)"	
+	echo "${green}"
+	read evalue
+	echo "${textreset}"
+	
+		
+
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "				 CPU Threads  					 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "How many CPU-cores do you want to use in the $blastname search? (example 4)"	
+	echo "${green}"
+	read threads
+	echo "${textreset}"
+
+echo "${red}"
+re='^[0-9]+$'
+if ! [[ $threads =~ $re ]]
+then
+while 
+read  -p 'Error, use only numbers: ' threads && ! [[ $threads =~ $re ]] ; do
+echo "${red}
+------------------------------------------------------------------
+ERROR!${textreset} $threads${red} IS NOT A VALID OPTION, PLEASE ONLY NUMBERS IN THIS FIELD!
+------------------------------------------------------------------
+"
+done
+fi
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${green}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "	   Do you want to add other $blastname parameters?[optional]		 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Insert other $blastname parameters bellow separated by spaces and starting 
+with dashes, or leave blank to skip (Example: -max_target_seqs 1)"	
+	echo "${textreset}"
+	read other_blast_param
+	echo "${green}"
+
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "	 	Percentage of top hits to extract from $blast run		 "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "What is the percentage of alignment of the extracted sequences?"	
+	echo "EXAMPLE:"
+	echo "To get all sequences that match from 10% to 100% type 10-100"
+	echo "To get 100% just type 100"
+	echo "NOTE: Only tens!"	
+	echo "Or type${green} help${textreset} to see all available options"
+		echo "${textreset}"
+	 read	pct_ident
+		echo "${green}"
+
+if [ "$pct_ident" != "10" ] && [ "$pct_ident" != "20" ] && [ "$pct_ident" != "30" ] && [ "$pct_ident" != "40" ] && [ "$pct_ident" != "50" ] && [ "$pct_ident" != "60" ] && [ "$pct_ident" != "70" ] && [ "$pct_ident" != "80" ] && [ "$pct_ident" != "90" ] && [ "$pct_ident" != "100" ] && [ "$pct_ident" != "10-100" ] && [ "$pct_ident" != "20-100" ] && [ "$pct_ident" != "30-100" ] && [ "$pct_ident" != "40-100" ] && [ "$pct_ident" != "50-100" ] && [ "$pct_ident" != "60-100" ] && [ "$pct_ident" != "70-100" ] && [ "$pct_ident" != "80-100" ] && [ "$pct_ident" != "90-100" ] && [ "$pct_ident" != "all" ] && [ "$pct_ident" != "help" ]
+			then
+
+echo "${red}"
+
+while 
+read  -p 'Error, try again: ' pct_ident && [ "$pct_ident" != "10" ] && [ "$pct_ident" != "20" ] && [ "$pct_ident" != "30" ] && [ "$pct_ident" != "40" ] && [ "$pct_ident" != "50" ] && [ "$pct_ident" != "60" ] && [ "$pct_ident" != "70" ] && [ "$pct_ident" != "80" ] && [ "$pct_ident" != "90" ] && [ "$pct_ident" != "100" ] && [ "$pct_ident" != "10-100" ] && [ "$pct_ident" != "20-100" ] && [ "$pct_ident" != "30-100" ] && [ "$pct_ident" != "40-100" ] && [ "$pct_ident" != "50-100" ] && [ "$pct_ident" != "60-100" ] && [ "$pct_ident" != "70-100" ] && [ "$pct_ident" != "80-100" ] && [ "$pct_ident" != "90-100" ] && [ "$pct_ident" != "all" ] && [ "$pct_ident" != "help" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$pct_ident${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+clear
+if [ "$pct_ident" = "help" ]
+then
+echo "${textreset} 
+ALL AVAILABLE OPTIONS 
+Extract all sequences that match X% with the query sequences!
+
+	type ${green} 10 ${textreset} to get only the sequences that match with 10%	
+	type ${green} 20 ${textreset} to get only the sequences that match with 20%	
+	type ${green} 30 ${textreset} to get only the sequences that match with 30%		
+	type ${green} 40 ${textreset} to get only the sequences that match with 40%		
+	type ${green} 50 ${textreset} to get only the sequences that match with 50%		
+	type ${green} 60 ${textreset} to get only the sequences that match with 60%		
+	type ${green} 70 ${textreset} to get only the sequences that match with 70%		
+	type ${green} 80 ${textreset} to get only the sequences that match with 80%		
+	type ${green} 90 ${textreset} to get only the sequences that match with 90%		
+	type ${green} 100 ${textreset} to get only the sequences that match with 100%
+	type ${green} 10-100 ${textreset} to get only the sequences that match with 10% to 100% of hits	
+	type ${green} 20-100 ${textreset} to get only the sequences that match with 20% to 100% of hits	
+	type ${green} 30-100 ${textreset} to get only the sequences that match with 30% to 100% of hits	
+	type ${green} 40-100 ${textreset} to get only the sequences that match with 40% to 100% of hits	
+	type ${green} 50-100 ${textreset} to get only the sequences that match with 50% to 100% of hits	
+	type ${green} 60-100 ${textreset} to get only the sequences that match with 60% to 100% of hits	
+	type ${green} 70-100 ${textreset} to get only the sequences that match with 70% to 100% of hits	
+	type ${green} 80-100 ${textreset} to get only the sequences that match with 80% to 100% of hits	
+	type ${green} 90-100 ${textreset} to get only the sequences that match with 90% to 100% of hits	
+
+	Or type${green} all ${textreset}to no filter and get all sequences the match in the blast search
+"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+fi
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+if [ $blast = 1 ]
+then	dbtype=prot 
+
+fi
+
+if [ $blast = 2 ]
+then	dbtype=nucl
+
+fi
+
+if [ $blast = 2 ]
+then	dbtype=nucl
+
+fi
+
+if [ $db_opt = 2 ]
+then
+echo "${green}"
+	echo    "--------------------------------------------------------------------------------"
+	echo	"		     Using $createdb as $blastname database!			 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${textreset}"
+
+else 
+
+echo	""
+echo	"${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo    "  			     Formatting $blastname database 				 "
+echo    "--------------------------------------------------------------------------------"
+echo	"Running!"
+echo	""
+echo	"makeblastdb -in $createdb -dbtype $dbtype"
+echo	"-------------------------------------------------------------------------------"
+
+if makeblastdb -in $createdb -dbtype $dbtype
+then 
+	echo    "--------------------------------------------------------------------------------"
+	echo	"			Database formatted successfully!!				 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${textreset}"
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR!"
+	echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+	exit 1
+
+
+fi
+fi
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo 	"${textreset}"
+echo	""
+echo    "--------------------------------------------------------------------------------"
+echo    "                                  Running $blastname                            "
+echo    "--------------------------------------------------------------------------------"
+echo 	"${textreset}
+	------------------------------------------------------------------------
+	$blastname options [REQUIRED]
+	------------------------------------------------------------------------
+	-query${green} $fastafile${textreset}
+	-db${green} $createdb${textreset}
+	-E-value${green} $evalue${textreset}
+	-num_threads${green} $threads${textreset}
+	-outfmt 6 [required]
+
+	------------------------------------------------------------------------
+	Other BLAST parameters [OPTIONAL]:
+	------------------------------------------------------------------------
+	$other_blast_param
+
+	------------------------------------------------------------------------
+	Extraction options
+	------------------------------------------------------------------------
+	Sequences with $pct_ident% will be extracted 	
+
+"
+
+
+if [ $blast = "1" ]; then
+	blast_0="blastx"
+	fi
+
+if  [ $blast = "2" ]; then
+	blast_0="blastn"
+	fi
+if [ $db_opt = 2 ]
+then
+$blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue -evalue $evalue -num_threads $threads -outfmt 6 $other_blast_param
+else
+
+if $blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue -evalue $evalue -num_threads $threads -outfmt 6 $other_blast_param
+	then
+		echo "$blastname OK!"
+else
+echo "${red}ERROR BLAST COMMANDS FAILED!
+PLEASE VERIFY IF YOU ADD THE CORRECT OPTIONS IN $blastname!!!! ${textreset}"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'	
+exit 1
+fi
+fi
+
+#	PERCENTAGE OF IDENTITY  10 TO 100%
+
+if [ $pct_ident = 10-100 ]
+then	
+	grep -F "10." $blast_0-evalue_$evalue >> temp2
+	grep -F "11." $blast_0-evalue_$evalue >> temp2
+	grep -F "12." $blast_0-evalue_$evalue >> temp2
+	grep -F "13." $blast_0-evalue_$evalue >> temp2
+	grep -F "14." $blast_0-evalue_$evalue >> temp2
+	grep -F "15." $blast_0-evalue_$evalue >> temp2
+	grep -F "16." $blast_0-evalue_$evalue >> temp2
+	grep -F "17." $blast_0-evalue_$evalue >> temp2
+	grep -F "18." $blast_0-evalue_$evalue >> temp2
+	grep -F "19." $blast_0-evalue_$evalue >> temp2
+	grep -F "20." $blast_0-evalue_$evalue >> temp2
+	grep -F "21." $blast_0-evalue_$evalue >> temp2
+	grep -F "22." $blast_0-evalue_$evalue >> temp2
+	grep -F "23." $blast_0-evalue_$evalue >> temp2
+	grep -F "24." $blast_0-evalue_$evalue >> temp2
+	grep -F "25." $blast_0-evalue_$evalue >> temp2
+	grep -F "26." $blast_0-evalue_$evalue >> temp2
+	grep -F "27." $blast_0-evalue_$evalue >> temp2
+	grep -F "28." $blast_0-evalue_$evalue >> temp2
+	grep -F "29." $blast_0-evalue_$evalue >> temp2
+	grep -F "30." $blast_0-evalue_$evalue >> temp2
+	grep -F "31." $blast_0-evalue_$evalue >> temp2
+	grep -F "32." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "34." $blast_0-evalue_$evalue >> temp2
+	grep -F "35." $blast_0-evalue_$evalue >> temp2
+	grep -F "36." $blast_0-evalue_$evalue >> temp2
+	grep -F "37." $blast_0-evalue_$evalue >> temp2
+	grep -F "38." $blast_0-evalue_$evalue >> temp2
+	grep -F "39." $blast_0-evalue_$evalue >> temp2
+	grep -F "40." $blast_0-evalue_$evalue >> temp2
+	grep -F "41." $blast_0-evalue_$evalue >> temp2
+	grep -F "42." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "44." $blast_0-evalue_$evalue >> temp2
+	grep -F "45." $blast_0-evalue_$evalue >> temp2
+	grep -F "46." $blast_0-evalue_$evalue >> temp2
+	grep -F "47." $blast_0-evalue_$evalue >> temp2
+	grep -F "48." $blast_0-evalue_$evalue >> temp2
+	grep -F "49." $blast_0-evalue_$evalue >> temp2
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  20 TO 100%
+if [ $pct_ident = 20-100 ]
+then	
+	grep -F "20." $blast_0-evalue_$evalue >> temp2
+	grep -F "21." $blast_0-evalue_$evalue >> temp2
+	grep -F "22." $blast_0-evalue_$evalue >> temp2
+	grep -F "23." $blast_0-evalue_$evalue >> temp2
+	grep -F "24." $blast_0-evalue_$evalue >> temp2
+	grep -F "25." $blast_0-evalue_$evalue >> temp2
+	grep -F "26." $blast_0-evalue_$evalue >> temp2
+	grep -F "27." $blast_0-evalue_$evalue >> temp2
+	grep -F "28." $blast_0-evalue_$evalue >> temp2
+	grep -F "29." $blast_0-evalue_$evalue >> temp2
+	grep -F "30." $blast_0-evalue_$evalue >> temp2
+	grep -F "31." $blast_0-evalue_$evalue >> temp2
+	grep -F "32." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "34." $blast_0-evalue_$evalue >> temp2
+	grep -F "35." $blast_0-evalue_$evalue >> temp2
+	grep -F "36." $blast_0-evalue_$evalue >> temp2
+	grep -F "37." $blast_0-evalue_$evalue >> temp2
+	grep -F "38." $blast_0-evalue_$evalue >> temp2
+	grep -F "39." $blast_0-evalue_$evalue >> temp2
+	grep -F "40." $blast_0-evalue_$evalue >> temp2
+	grep -F "41." $blast_0-evalue_$evalue >> temp2
+	grep -F "42." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "44." $blast_0-evalue_$evalue >> temp2
+	grep -F "45." $blast_0-evalue_$evalue >> temp2
+	grep -F "46." $blast_0-evalue_$evalue >> temp2
+	grep -F "47." $blast_0-evalue_$evalue >> temp2
+	grep -F "48." $blast_0-evalue_$evalue >> temp2
+	grep -F "49." $blast_0-evalue_$evalue >> temp2
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  30 TO 100%
+if [ $pct_ident = 30-100 ]
+then	
+	grep -F "30." $blast_0-evalue_$evalue >> temp2
+	grep -F "31." $blast_0-evalue_$evalue >> temp2
+	grep -F "32." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "34." $blast_0-evalue_$evalue >> temp2
+	grep -F "35." $blast_0-evalue_$evalue >> temp2
+	grep -F "36." $blast_0-evalue_$evalue >> temp2
+	grep -F "37." $blast_0-evalue_$evalue >> temp2
+	grep -F "38." $blast_0-evalue_$evalue >> temp2
+	grep -F "39." $blast_0-evalue_$evalue >> temp2
+	grep -F "40." $blast_0-evalue_$evalue >> temp2
+	grep -F "41." $blast_0-evalue_$evalue >> temp2
+	grep -F "42." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "44." $blast_0-evalue_$evalue >> temp2
+	grep -F "45." $blast_0-evalue_$evalue >> temp2
+	grep -F "46." $blast_0-evalue_$evalue >> temp2
+	grep -F "47." $blast_0-evalue_$evalue >> temp2
+	grep -F "48." $blast_0-evalue_$evalue >> temp2
+	grep -F "49." $blast_0-evalue_$evalue >> temp2
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  40 TO 100%
+if [ $pct_ident = 40-100 ]
+then	
+	grep -F "40." $blast_0-evalue_$evalue >> temp2
+	grep -F "41." $blast_0-evalue_$evalue >> temp2
+	grep -F "42." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "44." $blast_0-evalue_$evalue >> temp2
+	grep -F "45." $blast_0-evalue_$evalue >> temp2
+	grep -F "46." $blast_0-evalue_$evalue >> temp2
+	grep -F "47." $blast_0-evalue_$evalue >> temp2
+	grep -F "48." $blast_0-evalue_$evalue >> temp2
+	grep -F "49." $blast_0-evalue_$evalue >> temp2
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  50 TO 100%
+if [ $pct_ident = 50-100 ]
+then	
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  60 TO 100%
+if [ $pct_ident = 60-100 ]
+then	
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  70 TO 100%
+if [ $pct_ident = 70-100 ]
+then	
+	grep -F "70." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "72." $blast_0-evalue_$evalue >> temp2
+	grep -F "73." $blast_0-evalue_$evalue >> temp2
+	grep -F "74." $blast_0-evalue_$evalue >> temp2
+	grep -F "75." $blast_0-evalue_$evalue >> temp2
+	grep -F "76." $blast_0-evalue_$evalue >> temp2
+	grep -F "77." $blast_0-evalue_$evalue >> temp2
+	grep -F "78." $blast_0-evalue_$evalue >> temp2
+	grep -F "79." $blast_0-evalue_$evalue >> temp2
+	grep -F "80." $blast_0-evalue_$evalue >> temp2
+	grep -F "81." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  80 TO 100%
+if [ $pct_ident = 80-100 ]
+then	
+	grep -F "80." $blast_0-evalue_$evalue >> temp2
+	grep -F "81." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  90 TO 100%
+if [ $pct_ident = 90-100 ]
+then	
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+	grep -F "100." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 10 ]
+then	
+	grep -F "10." $blast_0-evalue_$evalue >> temp2
+	grep -F "11." $blast_0-evalue_$evalue >> temp2
+	grep -F "12." $blast_0-evalue_$evalue >> temp2
+	grep -F "13." $blast_0-evalue_$evalue >> temp2
+	grep -F "14." $blast_0-evalue_$evalue >> temp2
+	grep -F "15." $blast_0-evalue_$evalue >> temp2
+	grep -F "16." $blast_0-evalue_$evalue >> temp2
+	grep -F "17." $blast_0-evalue_$evalue >> temp2
+	grep -F "18." $blast_0-evalue_$evalue >> temp2
+	grep -F "19." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 20 ]
+then	
+	grep -F "20." $blast_0-evalue_$evalue >> temp2
+	grep -F "21." $blast_0-evalue_$evalue >> temp2
+	grep -F "22." $blast_0-evalue_$evalue >> temp2
+	grep -F "23." $blast_0-evalue_$evalue >> temp2
+	grep -F "24." $blast_0-evalue_$evalue >> temp2
+	grep -F "25." $blast_0-evalue_$evalue >> temp2
+	grep -F "26." $blast_0-evalue_$evalue >> temp2
+	grep -F "27." $blast_0-evalue_$evalue >> temp2
+	grep -F "28." $blast_0-evalue_$evalue >> temp2
+	grep -F "29." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 30 ]
+then	
+	grep -F "30." $blast_0-evalue_$evalue >> temp2
+	grep -F "31." $blast_0-evalue_$evalue >> temp2
+	grep -F "32." $blast_0-evalue_$evalue >> temp2
+	grep -F "33." $blast_0-evalue_$evalue >> temp2
+	grep -F "34." $blast_0-evalue_$evalue >> temp2
+	grep -F "35." $blast_0-evalue_$evalue >> temp2
+	grep -F "36." $blast_0-evalue_$evalue >> temp2
+	grep -F "37." $blast_0-evalue_$evalue >> temp2
+	grep -F "38." $blast_0-evalue_$evalue >> temp2
+	grep -F "39." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 40 ]
+then	
+	grep -F "40." $blast_0-evalue_$evalue >> temp2
+	grep -F "41." $blast_0-evalue_$evalue >> temp2
+	grep -F "42." $blast_0-evalue_$evalue >> temp2
+	grep -F "43." $blast_0-evalue_$evalue >> temp2
+	grep -F "44." $blast_0-evalue_$evalue >> temp2
+	grep -F "45." $blast_0-evalue_$evalue >> temp2
+	grep -F "46." $blast_0-evalue_$evalue >> temp2
+	grep -F "47." $blast_0-evalue_$evalue >> temp2
+	grep -F "48." $blast_0-evalue_$evalue >> temp2
+	grep -F "49." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 50 ]
+then	
+	grep -F "50." $blast_0-evalue_$evalue >> temp2
+	grep -F "51." $blast_0-evalue_$evalue >> temp2
+	grep -F "52." $blast_0-evalue_$evalue >> temp2
+	grep -F "53." $blast_0-evalue_$evalue >> temp2
+	grep -F "54." $blast_0-evalue_$evalue >> temp2
+	grep -F "55." $blast_0-evalue_$evalue >> temp2
+	grep -F "56." $blast_0-evalue_$evalue >> temp2
+	grep -F "57." $blast_0-evalue_$evalue >> temp2
+	grep -F "58." $blast_0-evalue_$evalue >> temp2
+	grep -F "59." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 60 ]
+then	
+	grep -F "60." $blast_0-evalue_$evalue >> temp2
+	grep -F "61." $blast_0-evalue_$evalue >> temp2
+	grep -F "62." $blast_0-evalue_$evalue >> temp2
+	grep -F "63." $blast_0-evalue_$evalue >> temp2
+	grep -F "64." $blast_0-evalue_$evalue >> temp2
+	grep -F "65." $blast_0-evalue_$evalue >> temp2
+	grep -F "66." $blast_0-evalue_$evalue >> temp2
+	grep -F "67." $blast_0-evalue_$evalue >> temp2
+	grep -F "68." $blast_0-evalue_$evalue >> temp2
+	grep -F "69." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 70 ]
+then	
+	grep -F "70." $blast_0-evalue_$evalue >> temp2
+	grep -F "71." $blast_0-evalue_$evalue >> temp2
+	grep -F "72." $blast_0-evalue_$evalue >> temp2
+	grep -F "73." $blast_0-evalue_$evalue >> temp2
+	grep -F "74." $blast_0-evalue_$evalue >> temp2
+	grep -F "75." $blast_0-evalue_$evalue >> temp2
+	grep -F "76." $blast_0-evalue_$evalue >> temp2
+	grep -F "77." $blast_0-evalue_$evalue >> temp2
+	grep -F "78." $blast_0-evalue_$evalue >> temp2
+	grep -F "79." $blast_0-evalue_$evalue >> temp2
+fi
+
+if [ $pct_ident = 80 ]
+then	
+	grep -F "80." $blast_0-evalue_$evalue >> temp2
+	grep -F "81." $blast_0-evalue_$evalue >> temp2
+	grep -F "82." $blast_0-evalue_$evalue >> temp2
+	grep -F "83." $blast_0-evalue_$evalue >> temp2
+	grep -F "84." $blast_0-evalue_$evalue >> temp2
+	grep -F "85." $blast_0-evalue_$evalue >> temp2
+	grep -F "86." $blast_0-evalue_$evalue >> temp2
+	grep -F "87." $blast_0-evalue_$evalue >> temp2
+	grep -F "88." $blast_0-evalue_$evalue >> temp2
+	grep -F "89." $blast_0-evalue_$evalue >> temp2
+
+fi
+
+if [ $pct_ident = 90 ]
+then	
+	grep -F "90." $blast_0-evalue_$evalue >> temp2
+	grep -F "91." $blast_0-evalue_$evalue >> temp2
+	grep -F "92." $blast_0-evalue_$evalue >> temp2
+	grep -F "93." $blast_0-evalue_$evalue >> temp2
+	grep -F "94." $blast_0-evalue_$evalue >> temp2
+	grep -F "95." $blast_0-evalue_$evalue >> temp2
+	grep -F "96." $blast_0-evalue_$evalue >> temp2
+	grep -F "97." $blast_0-evalue_$evalue >> temp2
+	grep -F "98." $blast_0-evalue_$evalue >> temp2
+	grep -F "99." $blast_0-evalue_$evalue >> temp2
+fi
+
+	if [ $pct_ident = 100 ]
+	then	
+		grep -F "100." $blast_0-evalue_$evalue >> temp2
+
+	fi
+
+if [ $pct_ident = all ]
+then	
+	cp $blast_0-evalue_$evalue temp2
+fi
+
+cut -f1 temp2 > temp3
+
+sed 's/^/>/' temp3 > temp4
+mv $blast_0-evalue_$evalue $blast_0-results_evalue_$evalue.outfmt6
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	if 
+				echo "${textreset}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"		 	 Extracting sequences, just wait.			 "
+				echo 	"	This can take a long time and depends of the size of your dataset. 	 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""	
+				cut -c 2- temp4 | xargs -n 1 samtools faidx $fastafile > seqs_only_the_tophit_$pct_ident%.fasta
+				then 
+echo 	"${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo	"		 	 Sequences successfully extracted!!!			 "
+echo    "--------------------------------------------------------------------------------"
+	else
+		echo -e "setf 4" | tput -S  # set fg red
+		echo	"ERROR!"
+		echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'		
+exit 1
+	fi
+
+sed -i '1s/^/Query 	 Target 	Pct_ident	Aligment_lenght		Number_of_mismatches 	      Num_of_gap_opens 	Srt_of_position_in_query 	End_of_position_in_query 	  Srt_position_in_target 	E-value 	 Bit_score\n/' temp2
+	mv	temp2 list_of_tophit-$pct_ident%_and_$blast_0-results
+	if	
+	rm $fastafile.fai
+	rm temp3
+	rm temp4
+then	
+echo 	"${textreset}"
+echo    "--------------------------------------------------------------------------------"
+echo	"		Temporary files and folders successfully deleted!!!		 "
+echo    "--------------------------------------------------------------------------------"
+echo	""
+
+
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR WHILE TRY DELETE TEMPORARY fiLES!"
+	echo	"PLEASE VERIFY IF YOU ARE RUNNING THIS SCRIPT AS ADMINISTRATOR/ROOT!!!!"
+fi
+
+
+if [ -s seqs_only_the_tophit_$pct_ident%.fasta ]
+then
+
+echo 	"${green}"
+echo	"===================================================================================================="
+echo 	""
+echo    "===================================== BLAST Extractor 0.9 =========================================="
+echo 	""
+echo	"===================================================================================================="
+echo    "======================= Laboratório de Biologia Molecular e Neuroecologia =========================="
+echo	'=======================  INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança =========================='
+echo	"===================================================================================================="
+echo '				         ___        ______    __     __
+                                        |   |      |      \  |  \   |  | 
+                                        |   |      |   D   ) |   \  |  | 
+                                        |   |      |      /  |    \ |  | 
+                                        |   |____  |      \  |  |\ \|  | 
+                                        |        | |   D   ) |  | \    |  
+                                        |________| |______/  |__|  \___|
+'                   
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "-----------------------------------------------------------------------------------------------------"
+echo	"   The extracted sequences are written in${textreset} seqs_only_the_tophit_$pct_ident%.fasta ${green}"
+echo	"   The${textreset} $blastname${green} results are written in${textreset} $blast_0-results_evalue_$evalue.outfmt6 ${green} "
+echo	"   The file${textreset} list_of_tophit-$pct_ident%_and_$blast_0-results${green} contain the $blastname results only for $pct_ident% of similarity"
+echo	"   The files of $blastname database are available in ${textreset}$work_dir${green}."
+echo    "-----------------------------------------------------------------------------------------------------"
+
+else
+clear
+     		echo "${red}"
+	echo    "-------------------------------------------------------------------------------------------
+"
+	echo	"No sequences with $pct_ident% was found, please try again by changing your search criteria!
+"
+	echo	"${green}However you cans access the $blast_0 results in $blast_0-results_evalue_$evalue.outfmt6"
+	echo    "${red}-------------------------------------------------------------------------------------------"
+	echo	""
+rm -f seqs_only_the_tophit_$pct_ident%.fasta
+rm -f list_of_tophit-$pct_ident%_and_$blast_0-results
+fi
+
+fi
+						# ONLY EXTRACTION 
+
+if [ $decision = 3 ]
+	then
+clear
+
+
+		echo 	"${green}"
+		echo	"________________________________________________________________________________"
+		echo 	""
+		echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+		echo	"________________________________________________________________________________"
+		echo 	""
+		echo    "${textreset}"
+		echo    "--------------------------------------------------------------------------------"
+		echo    "			       Fasta to compare 				 "
+		echo    "--------------------------------------------------------------------------------"
+			echo ""
+		echo "Enter the name of fasta file to run:"	
+		echo 	"${green}"
+			read fastafile
+		echo ""
+
+if [ -f $fastafile ];
+then
+echo "Fasta file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' fastafile && [ ! -f $fastafile ] ; do
+echo "${red}
+--------------------------------------------------------------------------
+THE FILE ${textreset}$fastafile${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$fastafile${red}""
+--------------------------------------------------------------------------
+"
+done
+fi
+
+		clear
+		echo	"________________________________________________________________________________"
+		echo 	""
+		echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+		echo	"________________________________________________________________________________"
+		echo 	""
+		echo "${textreset}"
+		echo    "--------------------------------------------------------------------------------"
+		echo    " 		   Blast file to get the top hit blast_result_list 		 		 "
+		echo    "--------------------------------------------------------------------------------"
+			echo ""
+		echo "Enter the name of file containing the blast result in${green} tabular (outfmt6)${textreset} format:"
+		echo "${green}"
+			read blast_result
+		echo ""
+
+if [ -f $blast_result ];
+then
+echo "Fasta file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' blast_result && [ ! -f $blast_result ] ; do
+echo "${red}
+--------------------------------------------------------------------------
+THE FILE ${textreset}$blast_result${red} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${textreset}$blast_result${red}""
+--------------------------------------------------------------------------
+"
+done
+fi
+		clear
+			
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	echo "${green}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "_________________________ BLAST Extractor 0.9 __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${textreset}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "	 	Percentage of top hits to extract from $blast run		 "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "What is the percentage of alignment of the extracted sequences?"	
+	echo "EXAMPLE:"
+	echo "To get all sequences that match from 10% to 100% type 10-100"
+	echo "To get 100% just type 100"
+	echo "NOTE: Only tens!"	
+	echo "Or type${green} help${textreset} to see all available options"
+		echo "${textreset}"
+	 read	pct_ident
+		echo "${green}"
+
+if [ "$pct_ident" != "10" ] && [ "$pct_ident" != "20" ] && [ "$pct_ident" != "30" ] && [ "$pct_ident" != "40" ] && [ "$pct_ident" != "50" ] && [ "$pct_ident" != "60" ] && [ "$pct_ident" != "70" ] && [ "$pct_ident" != "80" ] && [ "$pct_ident" != "90" ] && [ "$pct_ident" != "100" ] && [ "$pct_ident" != "10-100" ] && [ "$pct_ident" != "20-100" ] && [ "$pct_ident" != "30-100" ] && [ "$pct_ident" != "40-100" ] && [ "$pct_ident" != "50-100" ] && [ "$pct_ident" != "60-100" ] && [ "$pct_ident" != "70-100" ] && [ "$pct_ident" != "80-100" ] && [ "$pct_ident" != "90-100" ] && [ "$pct_ident" != "all" ]  && [ "$pct_ident" != "help" ]
+			then
+
+echo "${red}"
+
+while 
+read  -p 'Error, try again: ' pct_ident && [ "$pct_ident" != "10" ] && [ "$pct_ident" != "20" ] && [ "$pct_ident" != "30" ] && [ "$pct_ident" != "40" ] && [ "$pct_ident" != "50" ] && [ "$pct_ident" != "60" ] && [ "$pct_ident" != "70" ] && [ "$pct_ident" != "80" ] && [ "$pct_ident" != "90" ] && [ "$pct_ident" != "100" ] && [ "$pct_ident" != "10-100" ] && [ "$pct_ident" != "20-100" ] && [ "$pct_ident" != "30-100" ] && [ "$pct_ident" != "40-100" ] && [ "$pct_ident" != "50-100" ] && [ "$pct_ident" != "60-100" ] && [ "$pct_ident" != "70-100" ] && [ "$pct_ident" != "80-100" ] && [ "$pct_ident" != "90-100" ] && [ "$pct_ident" != "all" ] && [ "$pct_ident" != "help" ] ; do
+echo "${red}
+-------------------------------------------------------------
+ERROR ${textreset}$pct_ident${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+
+clear
+if [ "$pct_ident" = "help" ]
+then
+echo "${textreset} 
+ALL AVAILABLE OPTIONS 
+Extract all sequences that match X% with the query sequences!
+
+	type ${green} 10 ${textreset} to get only the sequences that match with 10%	
+	type ${green} 20 ${textreset} to get only the sequences that match with 20%	
+	type ${green} 30 ${textreset} to get only the sequences that match with 30%		
+	type ${green} 40 ${textreset} to get only the sequences that match with 40%		
+	type ${green} 50 ${textreset} to get only the sequences that match with 50%		
+	type ${green} 60 ${textreset} to get only the sequences that match with 60%		
+	type ${green} 70 ${textreset} to get only the sequences that match with 70%		
+	type ${green} 80 ${textreset} to get only the sequences that match with 80%		
+	type ${green} 90 ${textreset} to get only the sequences that match with 90%		
+	type ${green} 100 ${textreset} to get only the sequences that match with 100%
+	type ${green} 10-100 ${textreset} to get only the sequences that match with 10% to 100% of hits	
+	type ${green} 20-100 ${textreset} to get only the sequences that match with 20% to 100% of hits	
+	type ${green} 30-100 ${textreset} to get only the sequences that match with 30% to 100% of hits	
+	type ${green} 40-100 ${textreset} to get only the sequences that match with 40% to 100% of hits	
+	type ${green} 50-100 ${textreset} to get only the sequences that match with 50% to 100% of hits	
+	type ${green} 60-100 ${textreset} to get only the sequences that match with 60% to 100% of hits	
+	type ${green} 70-100 ${textreset} to get only the sequences that match with 70% to 100% of hits	
+	type ${green} 80-100 ${textreset} to get only the sequences that match with 80% to 100% of hits	
+	type ${green} 90-100 ${textreset} to get only the sequences that match with 90% to 100% of hits	
+
+	Or type${green} all ${textreset}to no filter and get all sequences the match in the blast search
+"
+exit 0
+fi
+
+#	PERCENTAGE OF IDENTITY  10 TO 100%
+cut -f1,3 $blast_result > blast_result_list
+
+if [ $pct_ident = 10-100 ]
+then	
+	grep -F "10." blast_result_list >> temp2
+	grep -F "11." blast_result_list >> temp2
+	grep -F "12." blast_result_list >> temp2
+	grep -F "13." blast_result_list >> temp2
+	grep -F "14." blast_result_list >> temp2
+	grep -F "15." blast_result_list >> temp2
+	grep -F "16." blast_result_list >> temp2
+	grep -F "17." blast_result_list >> temp2
+	grep -F "18." blast_result_list >> temp2
+	grep -F "19." blast_result_list >> temp2
+	grep -F "20." blast_result_list >> temp2
+	grep -F "21." blast_result_list >> temp2
+	grep -F "22." blast_result_list >> temp2
+	grep -F "23." blast_result_list >> temp2
+	grep -F "24." blast_result_list >> temp2
+	grep -F "25." blast_result_list >> temp2
+	grep -F "26." blast_result_list >> temp2
+	grep -F "27." blast_result_list >> temp2
+	grep -F "28." blast_result_list >> temp2
+	grep -F "29." blast_result_list >> temp2
+	grep -F "30." blast_result_list >> temp2
+	grep -F "31." blast_result_list >> temp2
+	grep -F "32." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "34." blast_result_list >> temp2
+	grep -F "35." blast_result_list >> temp2
+	grep -F "36." blast_result_list >> temp2
+	grep -F "37." blast_result_list >> temp2
+	grep -F "38." blast_result_list >> temp2
+	grep -F "39." blast_result_list >> temp2
+	grep -F "40." blast_result_list >> temp2
+	grep -F "41." blast_result_list >> temp2
+	grep -F "42." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "44." blast_result_list >> temp2
+	grep -F "45." blast_result_list >> temp2
+	grep -F "46." blast_result_list >> temp2
+	grep -F "47." blast_result_list >> temp2
+	grep -F "48." blast_result_list >> temp2
+	grep -F "49." blast_result_list >> temp2
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  20 TO 100%
+if [ $pct_ident = 20-100 ]
+then	
+	grep -F "20." blast_result_list >> temp2
+	grep -F "21." blast_result_list >> temp2
+	grep -F "22." blast_result_list >> temp2
+	grep -F "23." blast_result_list >> temp2
+	grep -F "24." blast_result_list >> temp2
+	grep -F "25." blast_result_list >> temp2
+	grep -F "26." blast_result_list >> temp2
+	grep -F "27." blast_result_list >> temp2
+	grep -F "28." blast_result_list >> temp2
+	grep -F "29." blast_result_list >> temp2
+	grep -F "30." blast_result_list >> temp2
+	grep -F "31." blast_result_list >> temp2
+	grep -F "32." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "34." blast_result_list >> temp2
+	grep -F "35." blast_result_list >> temp2
+	grep -F "36." blast_result_list >> temp2
+	grep -F "37." blast_result_list >> temp2
+	grep -F "38." blast_result_list >> temp2
+	grep -F "39." blast_result_list >> temp2
+	grep -F "40." blast_result_list >> temp2
+	grep -F "41." blast_result_list >> temp2
+	grep -F "42." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "44." blast_result_list >> temp2
+	grep -F "45." blast_result_list >> temp2
+	grep -F "46." blast_result_list >> temp2
+	grep -F "47." blast_result_list >> temp2
+	grep -F "48." blast_result_list >> temp2
+	grep -F "49." blast_result_list >> temp2
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  30 TO 100%
+if [ $pct_ident = 30-100 ]
+then	
+	grep -F "30." blast_result_list >> temp2
+	grep -F "31." blast_result_list >> temp2
+	grep -F "32." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "34." blast_result_list >> temp2
+	grep -F "35." blast_result_list >> temp2
+	grep -F "36." blast_result_list >> temp2
+	grep -F "37." blast_result_list >> temp2
+	grep -F "38." blast_result_list >> temp2
+	grep -F "39." blast_result_list >> temp2
+	grep -F "40." blast_result_list >> temp2
+	grep -F "41." blast_result_list >> temp2
+	grep -F "42." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "44." blast_result_list >> temp2
+	grep -F "45." blast_result_list >> temp2
+	grep -F "46." blast_result_list >> temp2
+	grep -F "47." blast_result_list >> temp2
+	grep -F "48." blast_result_list >> temp2
+	grep -F "49." blast_result_list >> temp2
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  40 TO 100%
+if [ $pct_ident = 40-100 ]
+then	
+	grep -F "40." blast_result_list >> temp2
+	grep -F "41." blast_result_list >> temp2
+	grep -F "42." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "44." blast_result_list >> temp2
+	grep -F "45." blast_result_list >> temp2
+	grep -F "46." blast_result_list >> temp2
+	grep -F "47." blast_result_list >> temp2
+	grep -F "48." blast_result_list >> temp2
+	grep -F "49." blast_result_list >> temp2
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  50 TO 100%
+if [ $pct_ident = 50-100 ]
+then	
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  60 TO 100%
+if [ $pct_ident = 60-100 ]
+then	
+	grep -F "60." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  70 TO 100%
+if [ $pct_ident = 70-100 ]
+then	
+	grep -F "70." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "72." blast_result_list >> temp2
+	grep -F "73." blast_result_list >> temp2
+	grep -F "74." blast_result_list >> temp2
+	grep -F "75." blast_result_list >> temp2
+	grep -F "76." blast_result_list >> temp2
+	grep -F "77." blast_result_list >> temp2
+	grep -F "78." blast_result_list >> temp2
+	grep -F "79." blast_result_list >> temp2
+	grep -F "80." blast_result_list >> temp2
+	grep -F "81." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  80 TO 100%
+if [ $pct_ident = 80-100 ]
+then	
+	grep -F "80." blast_result_list >> temp2
+	grep -F "81." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  90 TO 100%
+if [ $pct_ident = 90-100 ]
+then	
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+	grep -F "100." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 10 ]
+then	
+	grep -F "10." blast_result_list >> temp2
+	grep -F "11." blast_result_list >> temp2
+	grep -F "12." blast_result_list >> temp2
+	grep -F "13." blast_result_list >> temp2
+	grep -F "14." blast_result_list >> temp2
+	grep -F "15." blast_result_list >> temp2
+	grep -F "16." blast_result_list >> temp2
+	grep -F "17." blast_result_list >> temp2
+	grep -F "18." blast_result_list >> temp2
+	grep -F "19." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 20 ]
+then	
+	grep -F "20." blast_result_list >> temp2
+	grep -F "21." blast_result_list >> temp2
+	grep -F "22." blast_result_list >> temp2
+	grep -F "23." blast_result_list >> temp2
+	grep -F "24." blast_result_list >> temp2
+	grep -F "25." blast_result_list >> temp2
+	grep -F "26." blast_result_list >> temp2
+	grep -F "27." blast_result_list >> temp2
+	grep -F "28." blast_result_list >> temp2
+	grep -F "29." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 30 ]
+then	
+	grep -F "30." blast_result_list >> temp2
+	grep -F "31." blast_result_list >> temp2
+	grep -F "32." blast_result_list >> temp2
+	grep -F "33." blast_result_list >> temp2
+	grep -F "34." blast_result_list >> temp2
+	grep -F "35." blast_result_list >> temp2
+	grep -F "36." blast_result_list >> temp2
+	grep -F "37." blast_result_list >> temp2
+	grep -F "38." blast_result_list >> temp2
+	grep -F "39." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 40 ]
+then	
+	grep -F "40." blast_result_list >> temp2
+	grep -F "41." blast_result_list >> temp2
+	grep -F "42." blast_result_list >> temp2
+	grep -F "43." blast_result_list >> temp2
+	grep -F "44." blast_result_list >> temp2
+	grep -F "45." blast_result_list >> temp2
+	grep -F "46." blast_result_list >> temp2
+	grep -F "47." blast_result_list >> temp2
+	grep -F "48." blast_result_list >> temp2
+	grep -F "49." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 50 ]
+then	
+	grep -F "50." blast_result_list >> temp2
+	grep -F "51." blast_result_list >> temp2
+	grep -F "52." blast_result_list >> temp2
+	grep -F "53." blast_result_list >> temp2
+	grep -F "54." blast_result_list >> temp2
+	grep -F "55." blast_result_list >> temp2
+	grep -F "56." blast_result_list >> temp2
+	grep -F "57." blast_result_list >> temp2
+	grep -F "58." blast_result_list >> temp2
+	grep -F "59." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 60 ]
+then	
+	grep -F "60." blast_result_list >> temp2
+	grep -F "61." blast_result_list >> temp2
+	grep -F "62." blast_result_list >> temp2
+	grep -F "63." blast_result_list >> temp2
+	grep -F "64." blast_result_list >> temp2
+	grep -F "65." blast_result_list >> temp2
+	grep -F "66." blast_result_list >> temp2
+	grep -F "67." blast_result_list >> temp2
+	grep -F "68." blast_result_list >> temp2
+	grep -F "69." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 70 ]
+then	
+	grep -F "70." blast_result_list >> temp2
+	grep -F "71." blast_result_list >> temp2
+	grep -F "72." blast_result_list >> temp2
+	grep -F "73." blast_result_list >> temp2
+	grep -F "74." blast_result_list >> temp2
+	grep -F "75." blast_result_list >> temp2
+	grep -F "76." blast_result_list >> temp2
+	grep -F "77." blast_result_list >> temp2
+	grep -F "78." blast_result_list >> temp2
+	grep -F "79." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 80 ]
+then	
+	grep -F "80." blast_result_list >> temp2
+	grep -F "81." blast_result_list >> temp2
+	grep -F "82." blast_result_list >> temp2
+	grep -F "83." blast_result_list >> temp2
+	grep -F "84." blast_result_list >> temp2
+	grep -F "85." blast_result_list >> temp2
+	grep -F "86." blast_result_list >> temp2
+	grep -F "87." blast_result_list >> temp2
+	grep -F "88." blast_result_list >> temp2
+	grep -F "89." blast_result_list >> temp2
+
+fi
+
+if [ $pct_ident = 90 ]
+then	
+	grep -F "90." blast_result_list >> temp2
+	grep -F "91." blast_result_list >> temp2
+	grep -F "92." blast_result_list >> temp2
+	grep -F "93." blast_result_list >> temp2
+	grep -F "94." blast_result_list >> temp2
+	grep -F "95." blast_result_list >> temp2
+	grep -F "96." blast_result_list >> temp2
+	grep -F "97." blast_result_list >> temp2
+	grep -F "98." blast_result_list >> temp2
+	grep -F "99." blast_result_list >> temp2
+fi
+
+if [ $pct_ident = 100 ]
+then	
+	grep -F "100." blast_result_list >> temp2
+
+fi
+
+if [ $pct_ident = all ]
+then	
+	cp blast_result_list temp2
+fi
+
+cut -f1 temp2 > temp3			
+sed 's/^/>/' temp3 > temp4
+	
+		if 
+				if			
+				echo "${textreset}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"Extracting sequences, just wait.			 "
+				echo 	"This can take a long time and depends of the size of your dataset. 	 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""	
+				
+					then
+						cut -c 2- temp4 | xargs -n 1 samtools faidx $fastafile > seqs_only_the_tophit_$pct_ident%.fasta
+					else
+						echo -e "setf 4" | tput -S  # set fg red
+						echo	"ERROR!"
+						echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+						function pause(){
+						read -p "$*"
+						}
+						echo -e "setf 4" | tput -S
+						pause 'Press [Enter] key to finish the script'
+						exit 1
+					fi
+			then 
+				echo "${green}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"		 	 Sequences successfully extracted!!!			 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""
+		fi			
+
+if	
+	rm $fastafile.fai
+	rm blast_result_list
+	rm temp3
+	rm temp4
+mv	temp2 list_of_tophit-$pct_ident%.txt
+
+sed -i '1s/^/Query 	 Pct_ident\n/' list_of_tophit-$pct_ident%.txt
+
+	then	
+		echo "${green}"
+	echo    "--------------------------------------------------------------------------------"
+	echo	"			Temporary files successfully deleted!!!			 "
+	echo    "--------------------------------------------------------------------------------"
+	echo	""
+	echo	""
+	
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR WHILE TRY DELETE TEMPORARY fiLES!"
+	echo	"PLEASE VERIFY IF YOU ARE RUNNING THIS SCRIPT AS ADMINISTRATOR/ROOT!!!!"
+fi
+
+if [ -s seqs_only_the_tophit_$pct_ident%.fasta ] 
+then
+
+
+    
+echo -e "setf 8" | tput -S  # set fg green
+echo	"================================================================================"
+echo 	""
+echo    "=========================== BLAST Extractor 0.9 ================================"
+echo 	""
+echo	"================================================================================"
+echo    "============= Laboratório de Biologia Molecular e Neuroecologia ================"
+echo	'============== INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança ================'
+echo	"================================================================================"
+echo '				 ___        ______    __     __
+				|   |      |	  \  |  \   |  | 
+				|   |      |   D   ) |   \  |  | 
+				|   |      |      /  |    \ |  | 
+				|   |____  |      \  |  |\ \|  | 
+				|        | |   D   ) |  | \    |  
+				|________| |______/  |__|  \___|
+'                     
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "--------------------------------------------------------------------------------"
+echo	"   The extracted sequences are written in${textreset} seqs_only_the_tophit_$pct_ident%_$fastafile.fasta${green}"    
+echo	"   The file${textreset} list_of_tophit-$pct_ident%.txt${green} contain the list of $pct_ident%${green}"
+echo    "--------------------------------------------------------------------------------"
+
+
+else
+clear
+     		echo "${red}"
+	echo    "-------------------------------------------------------------------------------------------
+"
+	echo	"No sequences with $pct_ident% was found, please try again by changing your search criteria!
+	"
+	echo    "-------------------------------------------------------------------------------------------"
+	echo	""
+rm -f seqs_only_the_tophit_$pct_ident%_$fastafile.fasta
+rm -f list_of_tophit-$pct_ident%.txt
+fi
+fi
+
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
