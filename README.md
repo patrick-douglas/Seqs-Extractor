@@ -303,7 +303,7 @@ This option will run a **MISA search** and after will extract only the sequences
 
 After this phase you are ready, just wait and the **MISA results** will be generated in the same folder that you are working.
 _____________________________________________
-## **VERY IMPORTANT NOTE**
+### **VERY IMPORTANT NOTE**
 By default, you will use default MISA parameters to search for microssatelites. You can modify these parameters if you prefer to (see the section **8. Customize misa.ini file to modify parameters of microssatellites identification** of this manual).
 _____________________________________________
 
