@@ -100,7 +100,7 @@ To use a file that is not in the working folder, enter the path with the file na
 	**1.3.1**	[FORMAT A BLAST DATABASE] Enter the name of .FASTA file that you want to format (example: ***Mus_musculus_uniprot_swisprot.fasta***):
 		**1.3.1.1**	The software will run the following command to format BLAST database:
 **NOTE: This command will be performed automatically and depends of your choice in item 1.1**
-##### IF YOU DECIDE TO USE BLASTx
+#### IF YOU DECIDE TO USE BLASTx
     $ makeblastdb -in name_of_your_database_to_BLAST.fasta -dbtype prot
 
 #### IF YOU DECIDE TO USE BLASTn
@@ -163,7 +163,7 @@ Example: ***M.musculus_NCBI_entire_genome.fasta***). Here is your query sequence
 
 **2.3.1.1**	The software will run the following command to format BLAST database:
 **NOTE: This command will be performed automatically and depends of your choice in item 2.1**
-##### IF YOU DECIDE TO USE BLASTx
+#### IF YOU DECIDE TO USE BLASTx
     $ makeblastdb -in name_of_your_database_to_BLAST.fasta -dbtype prot
 
 #### IF YOU DECIDE TO USE BLASTn
