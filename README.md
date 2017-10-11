@@ -303,7 +303,8 @@ This option will run a **MISA search** and after will extract only the sequences
 
 After this phase you are ready, just wait and the **MISA results** will be generated in the same folder that you are working.
 _____________________________________________
-**VERY IMPORTANT NOTE**: By default, you will use default MISA parameters to search for microssatelites. You can modify these parameters if you prefer to (see the section **8. Customize misa.ini file to modify parameters of microssatellites identification** of this manual).
+## **VERY IMPORTANT NOTE**
+By default, you will use default MISA parameters to search for microssatelites. You can modify these parameters if you prefer to (see the section **8. Customize misa.ini file to modify parameters of microssatellites identification** of this manual).
 _____________________________________________
 
 The final screen will indicate the name of the files (**MISA results files** and the .FASTA file with the sequences extracted). The sequences in .FASTA file generated will be named with the ID of the sequences obtained from the input file **(For use in Trinity Differential Expression pipeline see the section 6 of this manual)**.
