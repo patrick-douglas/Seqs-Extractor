@@ -21,7 +21,7 @@ It works with shell bash. Seqs-Extractor is developed for Linux, it should also 
 Linux Mint 17.3 xfce and Ubuntu 16.4 LTs.
 
 # Minimum System Requirements
-	- Linux Debian based operating system.
+	- Linux Debian based operating system, at time **Seqs-Extractor** does not work in CentOS/Red Hat.
 	- Internet access is required during installation process
 
 # Documentations in the Distribution
