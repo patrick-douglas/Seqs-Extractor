@@ -1,5 +1,5 @@
-# Seqs-Extractor user manual
-
+# Seqs-Extractor
+![logo](https://github.com/patrick-douglas/Seqs-Extractor/blob/master/logo/seqs-extractor_icon2.png)
 								
 **Support, feedback or questions to patrick@ufpa.br**
 
