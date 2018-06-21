@@ -1,0 +1,82 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+home_dir=$(echo ~/)
+	echo "${g}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${w}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                             Working directory                                  "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "What is the directory that you are working, Leave blank to use default"
+	echo "${y}NOTE: Default is your Home folder($home_dir)${w}"
+		echo "${g}"
+		read work_dir
+		echo "${w}"
+
+if [ ! -d $work_dir ];
+then
+echo "${r}"
+while 
+read -p 'Try again: ' work_dir && [ ! -d $work_dir ]; do
+echo "${r}
+-------------------------------------------------------------
+ERROR ${w}$work_dir${r} IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER!
+-------------------------------------------------------------
+"
+done
+fi
+
+cd $work_dir
+if [ $? -eq 0 ]
+then
+clear
+else
+echo "${r}
+-------------------------------------------------------------------------------------------
+ERROR ${w}$work_dir${r} 
+IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER AND TRY RUN THE Seqs-Extractor AGAIN,
+THIS COMMONLY OCCURS BECAUSE YOU ARE TRYING USE AND INVALID FOLDER OR A DIRECTORY THAT
+CONTAINS SPACES.
+${y}Example /home/lbn/teste dois/${r}
+THE FOLDER NAMES CAN NOT CONTAIN SPACES, YOU CAN REPLACE SPACES BY UNDERLINE 
+${y}Example /home/lbn/teste_dois/${r}
+-------------------------------------------------------------------------------------------
+"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script and this terminal window!'
+exit 1
+fi
+
+if [[ -z "$work_dir" ]]
+then
+selected_dir="$home_dir"
+else
+selected_dir="$echo $work_dir"
+fi
+						# CUSTOMIZE misa.ini FILE
+
+echo "definition(unit_size,min_repeats):                   1-10 2-6 3-5 4-5 5-5 6-5" > misa.ini
+echo "interruptions(max_difference_between_2_SSRs):        100" >> misa.ini
+
+
+gedit misa.ini 
+
+	echo    "${g}-------------------------------------------------------------------------------------"
+	echo	"After edit${w} misa.ini${g} just hit ${w}Ctrl+S${g} to save and run the script again."
+	echo	"The file will be available in you work directory and will be replaced by MISA default"
+	echo	"if you run the option${w} 6${g} again."
+	echo 	"${w}See the REAME.md and MISA documentation to learn about this file.${g}"
+	echo    "-------------------------------------------------------------------------------------"
+	echo	""
+

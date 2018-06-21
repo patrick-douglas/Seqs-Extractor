@@ -1,0 +1,626 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+home_dir=$(echo ~/)
+	echo "${g}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo "${w}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                             Working directory                                  "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "What is the directory that you are working, Leave blank to use default"
+	echo "${y}NOTE: Default is your Home folder($home_dir)${w}"
+		echo "${g}"
+		read work_dir
+		echo "${w}"
+
+if [ ! -d $work_dir ];
+then
+echo "${r}"
+while 
+read -p 'Try again: ' work_dir && [ ! -d $work_dir ]; do
+echo "${r}
+-------------------------------------------------------------
+ERROR ${w}$work_dir${r} IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER!
+-------------------------------------------------------------
+"
+done
+fi
+
+cd $work_dir
+if [ $? -eq 0 ]
+then
+clear
+else
+echo "${r}
+-------------------------------------------------------------------------------------------
+ERROR ${w}$work_dir${r} 
+IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER AND TRY RUN THE Seqs-Extractor AGAIN,
+THIS COMMONLY OCCURS BECAUSE YOU ARE TRYING USE AND INVALID FOLDER OR A DIRECTORY THAT
+CONTAINS SPACES.
+${y}Example /home/lbn/teste dois/${r}
+THE FOLDER NAMES CAN NOT CONTAIN SPACES, YOU CAN REPLACE SPACES BY UNDERLINE 
+${y}Example /home/lbn/teste_dois/${r}
+-------------------------------------------------------------------------------------------
+"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script and this terminal window!'
+exit 1
+fi
+
+if [[ -z "$work_dir" ]]
+then
+selected_dir="$home_dir"
+else
+selected_dir="$echo $work_dir"
+fi
+
+	echo "${g}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+	echo "${w}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Blast search                                   "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Which BLAST do you want to use?
+${g} 1${w} to run BLASTX
+${g} 2${w} to run BLASTN"
+		echo "${g}"
+		read blast
+		echo "${w}"
+if [ "$blast" != "1" ] && [ "$blast" != "2" ]
+
+then
+echo "${r}"
+
+while 
+read  -p 'Try again: ' blast && [ "$blast" != "1" ] && [ "$blast" != "2" ] ; do
+echo "${r}
+-------------------------------------------------------------
+ERROR ${w}$blast${r} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+clear
+
+blastname=""
+if [ $blast = "1" ]; then
+	blastname="BLASTX"
+fi
+
+if [ $blast = "2" ]; then
+	blastname="BLASTN"
+fi
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	echo "${g}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+	echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+	echo "${w}"
+	echo    "--------------------------------------------------------------------------------"
+	echo    "                                 Fasta to query                                 "
+	echo    "--------------------------------------------------------------------------------"
+		echo ""
+	echo "Enter the name of fasta file to run $blastname (example.fasta):"
+	echo "${g}"
+		read fastafile
+		echo ""
+
+if [ -f $fastafile ];
+then
+echo "Fasta file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' fastafile && [ ! -f $fastafile ] ; do
+echo "${r}
+--------------------------------------------------------------------------
+THE FILE ${w}$fastafile${r} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${w}$fastafile${r}""
+--------------------------------------------------------------------------
+"
+done
+fi
+
+clear
+#------------------------------------------------------------------------------------------
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "             Create $blastname database or use your own database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "${g} 1${w} to create a new database
+${g} 2${w} to use a preexisting database"
+		echo "${g}"
+		read db_opt
+		echo "${w}"
+if [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ]
+
+then
+echo "${r}"
+
+while 
+read  -p 'Try again: ' db_opt && [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ] ; do
+echo "${r}
+-------------------------------------------------------------
+ERROR ${w}$db_opt${r} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+clear
+
+if [ $db_opt = 2 ]
+then
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "            What is your $blastname database?                "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+	echo "Please enter the name of the pre-formated $blastname database?"
+		echo "${g}"
+		read own_db
+		echo "${w}"
+if [ ! -f $own_db ] ;
+
+then
+echo "${r}"
+
+while 
+read  -p 'Try again: ' own_db && [ ! -f $own_db ] ; do
+echo "${r}
+-------------------------------------------------------------
+ERROR ${w}$own_db${r} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+-------------------------------------------------------------
+"
+done
+fi
+
+
+if [ $db_opt = 2 ]
+then	createdb=$own_db
+
+fi
+clear
+
+else 
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                           Create database to $blastname                        "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Enter the name of file to create the $blastname database:"	
+		echo "${g}"
+		read createdb
+		echo "${w}"
+
+if [ -f $createdb ];
+then
+echo "Database file is ok!"
+else
+while 
+read  -p 'Error File not found, Try again: ' createdb && [ ! -f $createdb ] ; do
+echo "${r}
+-------------------------------------------------------------
+THE FILE ${w}$createdb${r} NOT FOUND, VERIFY IF THE NAME OR PATH TO FILE IS CORRECT!
+YOU TYPED ""${w}$createdb${r}""
+-------------------------------------------------------------
+"
+done
+fi
+fi
+
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "                                $blastname E-value                                   "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Click the link bellow to learn more about E-value." 
+echo "https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=FAQ#expect"
+	echo ""
+echo "Enter the Expected value(E-value) (example 1e-3):"	
+	echo "${g}"
+	read evalue
+	echo "${w}"
+	
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "				 CPU Threads  					 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "How many CPU-cores do you want to use in the $blastname search? (example 4)"	
+	echo "${g}"
+	read threads
+	echo "${w}"
+
+echo "${r}"
+re='^[0-9]+$'
+if ! [[ $threads =~ $re ]]
+then
+while 
+read  -p 'Error, use only numbers: ' threads && ! [[ $threads =~ $re ]] ; do
+echo "${r}
+------------------------------------------------------------------
+ERROR!${w} $threads${r} IS NOT A VALID OPTION, PLEASE ONLY NUMBERS IN THIS FIELD!
+------------------------------------------------------------------
+"
+done
+fi
+
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "		     Output file for $blastname results				 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "What is the format of $blastname results output file?
+Type${g} help${w} to see all available output formats!"	
+	echo "${g}"
+	read outfmt
+	echo "${w}"
+
+if [ $outfmt = "help" ]; then
+
+echo "${w}ALL AVAILABLE FORMAT OPTIONS:
+	0 = pairwise,
+	1 = query-anchored showing identities,
+	2 = query-anchored no identities,
+	3 = flat query-anchored, show identities,
+	4 = flat query-anchored, no identities,
+	5 = XML Blast output,
+	6 = tabular,
+	7 = tabular with comment lines,
+	8 = Text ASN.1,
+	9 = Binary ASN.1,
+	10 = Comma-separated values,
+	11 = BLAST archive format (ASN.1) 
+"
+echo "Options${g} 6 ${w},${g} 7${w}, and${g} 10${w} can be additionally configured, type${g} more ${w}to see additional options:
+${g}"
+	read more_help
+
+		if [ $more_help = more ]
+			then 
+			echo "${w} 
+Options${g} 6 ${w},${g} 7${w}, and${g} 10${w} can be additionally configured to produce a custom format specified by space delimited format specifiers.
+The supported format specifiers are:
+  	    qseqid means Query Seq-id
+   	       qgi means Query GI
+   	      qacc means Query accesion
+   	   qaccver means Query accesion.version
+   	      qlen means Query sequence length
+   	    sseqid means Subject Seq-id
+   	 sallseqid means All subject Seq-id(s), separated by a ';'
+   	       sgi means Subject GI
+   	    sallgi means All subject GIs
+   	      sacc means Subject accession
+   	   saccver means Subject accession.version
+   	   sallacc means All subject accessions
+   	      slen means Subject sequence length
+   	    qstart means Start of alignment in query
+   	      qend means End of alignment in query
+   	    sstart means Start of alignment in subject
+   	      send means End of alignment in subject
+   	      qseq means Aligned part of query sequence
+   	      sseq means Aligned part of subject sequence
+   	    evalue means Expect value
+   	  bitscore means Bit score
+   	     score means Raw score
+   	    length means Alignment length
+   	    pident means Percentage of identical matches
+   	    nident means Number of identical matches
+   	  mismatch means Number of mismatches
+   	  positive means Number of positive-scoring matches
+   	   gapopen means Number of gap openings
+   	      gaps means Total number of gaps
+   	      ppos means Percentage of positive-scoring matches
+   	    frames means Query and subject frames separated by a '/'
+   	    qframe means Query frame
+   	    sframe means Subject frame
+   	      btop means Blast traceback operations (BTOP)
+   	   staxids means Subject Taxonomy ID(s), separated by a ';'
+   	 sscinames means Subject Scientific Name(s), separated by a ';'
+   	 scomnames means Subject Common Name(s), separated by a ';'
+       sblastnames means Subject Blast Name(s), separated by a ';'  (in alphabetical order)
+   	sskingdoms means Subject Super Kingdom(s), separated by a ';'(in alphabetical order) 
+   	    stitle means Subject Title
+   	salltitles means All Subject Title(s), separated by a '<>'
+   	   sstrand means Subject Strand
+   	     qcovs means Query Coverage Per Subject
+   	   qcovhsp means Query Coverage Per HSP
+  
+if the addtional options are not provided, the default value is:
+   'qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore'.
+
+SEE BLAST DOCUMENTATION TO LEARN MORE
+"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+	else
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+	fi
+fi
+clear
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
+echo	"________________________________________________________________________________"
+echo	""
+echo	"${y}NOTE: Your work directory is${w} $selected_dir${g}"
+echo "${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "	   Do you want to add other $blastname parameters?[optional]		 "
+echo    "--------------------------------------------------------------------------------"
+	echo ""
+echo "Insert other $blastname parameters bellow separated by spaces and starting 
+with dashes, or leave blank to skip (Example: -max_target_seqs 1)"	
+	echo "${w}"
+	read other_blast_param
+	echo "${g}"
+
+clear
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+if [ $blast = 1 ]
+then	dbtype=prot 
+
+fi
+
+if [ $blast = 2 ]
+then	dbtype=nucl
+
+fi
+
+if [ $db_opt = 2 ]
+then
+echo "${g}"
+	echo    "--------------------------------------------------------------------------------"
+	echo	"		     Using $createdb as $blastname database!			 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${w}"
+
+else 
+
+echo	""
+echo	"${w}"
+echo    "--------------------------------------------------------------------------------"
+echo    "  			     Formatting $blastname database 				 "
+echo    "--------------------------------------------------------------------------------"
+
+if
+#function of slash spin
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+(  makeblastdb -in $createdb -dbtype $dbtype ) &
+echo -n "Running${g} makeblastdb -in $createdb -dbtype $dbtype${w}, please wait... "
+spinner $!
+echo " DONE!"
+
+
+then 
+	echo    "--------------------------------------------------------------------------------"
+	echo	"			Database formatted successfully!!				 "
+	echo    "--------------------------------------------------------------------------------"
+	echo 	"${w}"
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR!"
+	echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+fi
+fi
+echo 	"${w}
+	------------------------------------------------------------------------
+	$blastname options 
+	------------------------------------------------------------------------
+
+	-query${g} $fastafile${w}
+	-db${g} $createdb${w}
+	-E-value${g} $evalue${w}
+	-num_threads${g} $threads${w}
+	-outfmt${g} $outfmt ${w}
+	------------------------------------------------------------------------
+	Other BLAST parameters [OPTIONAL]:
+	------------------------------------------------------------------------
+	$other_blast_param
+
+	------------------------------------------------------------------------"
+
+if [ $blast = "1" ]; then
+	blast_0="blastx"
+	fi
+
+if  [ $blast = "2" ]; then
+	blast_0="blastn"
+	fi
+if [ $db_opt = 2 ]
+then
+#function of slash spin
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+(  $blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue.outfmt$outfmt -evalue $evalue -num_threads $threads -outfmt $outfmt $other_blast_param ) &
+echo -n "Running ${g} $blastname${w}, please wait... "
+spinner $!
+echo " DONE!"
+
+else
+
+if 
+#function of slash spin
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+(  $blast_0 -query $fastafile -db $createdb -out $blast_0-evalue_$evalue.outfmt$outfmt -evalue $evalue -num_threads $threads -outfmt $outfmt $other_blast_param ) &
+echo -n "Running ${g} $blastname${w}, please wait... "
+spinner $!
+echo " DONE!"
+
+	then
+echo "" 
+else
+echo "${r}ERROR BLAST COMMANDS FAILED!
+PLEASE VERIFY IF YOU ADD THE CORRECT OPTIONS IN $blastname!!!!${w} OPTIONS"
+function pause(){
+   read -p "$*"
+}
+echo -e "setf 4" | tput -S
+pause 'Press [Enter] key to finish the script'
+exit 1
+fi
+fi
+
+
+echo	"${g}================================================================================"
+echo 	""
+echo    "============================ Seqs-Extractor 1.0 ================================"
+echo 	""
+echo	"================================================================================"
+echo    "============= Laboratório de Biologia Molecular e Neuroecologia ================"
+echo	'============== INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança ================'
+echo	"================================================================================"
+echo '				 ___        ______    __     __
+				|   |      |	  \  |  \   |  | 
+				|   |      |   D   ) |   \  |  | 
+				|   |      |      /  |    \ |  | 
+				|   |____  |      \  |  |\ \|  | 
+				|        | |   D   ) |  | \    |  
+				|________| |______/  |__|  \___|
+'                   
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "--------------------------------------------------------------------------------"
+echo	"The results of $blastname are written in ${w}$blast_0-evalue_$evalue.outfmt$outfmt${g}"
+echo	"The files of $blastname database are available in ${w}$work_dir${g}"
+echo	"${y}NOTE: Results will be available at${w} $work_dir${g}"
+echo    "--------------------------------------------------------------------------------"
+
+#Close $decision var
+
