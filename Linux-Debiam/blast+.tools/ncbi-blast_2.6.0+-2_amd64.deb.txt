@@ -1,4 +1,0 @@
-This file, should be BLAST+ .deb installer
-Avaliable at SF at link bellow
-https://sourceforge.net/projects/seqs-extractor/files/Linux-Debiam/blast%2B.tools/
-

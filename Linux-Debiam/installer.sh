@@ -1,20 +1,20 @@
 #!/bin/bash
 #This script can install or unistall Seqs-Extractor   in your PC
-textreset=$(tput sgr0) 
-red=$(tput setaf 1)
-green=$(tput setaf 2) 
-orange=$(tput setaf 8) 
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+o=$(tput setaf 8) 
 FILE="/tmp/out.$$"
 GREP="/bin/grep"
 if [[ $EUID -ne 0 ]]; then
-echo 	"${green}"
+echo 	"${g}"
 echo	"________________________________________________________________________________"
 echo 	""
 echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
 echo	"________________________________________________________________________________"
 echo 	""
 	echo ""
-   echo "${red}ERROR: THIS SCRIPT MUST BE RUN AS ROOT" 1>&2
+   echo "${r}ERROR: THIS SCRIPT MUST BE RUN AS ROOT" 1>&2
 	echo ""
    exit 1
 fi
@@ -22,46 +22,45 @@ fi
 clear
 
 
-	echo "${green}"
+	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
 	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
 	echo	"________________________________________________________________________________"
 	echo	""
-	echo "${textreset}"
+	echo "${w}"
 	echo    "--------------------------------------------------------------------------------"
 	echo    "                         Configuration script                             "
 	echo    "--------------------------------------------------------------------------------"
 		echo ""
 	echo "Choose an option bellow:
 
-${green} 1${textreset} to install Seqs-Extractor  and all required tools 
-${green} 2${textreset} to uninstall Seqs-Extractor  and all required tools"
-		echo "${green}"
+${g} 1${w} to install Seqs-Extractor  and all required tools 
+${g} 2${w} to uninstall Seqs-Extractor  and all required tools"
+		echo "${g}"
 		read inst_opt
-		echo "${textreset}"
-
+		echo "${w}"
 
 if [ "$inst_opt" != "1" ] && [ "$inst_opt" != "2" ]
 then
-echo "${red}"
+echo "${r}"
 while 
 read -p 'Try again: ' inst_opt && [ "$inst_opt" != "1" ] && [ "$inst_opt" != "2" ] ; do
-echo "${red}
+echo "${r}
 -------------------------------------------------------------
-ERROR ${textreset}$inst_opt${red} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
+ERROR ${w}$inst_opt${r} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
 -------------------------------------------------------------
 "
 done
 fi
-echo "${textreset}"
+echo "${w}"
+
 if [ $inst_opt = "1" ]; then
 
 #Set -j option during make process
 nproc > .cpu.txt
 	threads=`cat .cpu.txt`
 
-if 
 apt-get install build-essential libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev libcurl3-dev libssl-dev -y
 #INSTALL AND COPY FILES AND APPS
 sudo apt-get update
@@ -104,8 +103,17 @@ make -j $threads -C samtools/samtools-1.8
 sudo make -j $threads install -C samtools/samtools-1.8
 rm -rf samtools/samtools-1.8
 rm -rf config.h config.log config.mk config.status Makefile debug lib po src tests Doxyfile libtool stamp-h1 htslib.pc.tmp .cpu.txt htslib.pc.tmp
-#Reinstall BLAST+
 
+#Reinstall BLAST+------------------------------------------
+if [ -f blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb ];
+then
+	echo ""
+else
+mkdir -p blast+.tools
+wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/Linux-Debiam/blast%2B.tools/ncbi-blast_2.7.1%2B-2_amd64.deb --directory-prefix=blast+.tools/
+echo	" "
+fi
+#Reinstall BLAST+------------------------------------------
 sudo apt-get purge ncbi-blast+ -y
 sudo apt-get purge ncbi-blast -y
 sudo apt-get purge blast2 -y
@@ -147,8 +155,6 @@ sudo cp misa.tools/misa.ini /usr/local/sbin/seqs-extractor/misa.ini
 sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.pl
 sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.ini
 sudo chmod +x /usr/local/sbin/seqs-extractor/misa.pl
-
-if [ $inst_opt = "1" ]; then
 sudo echo > /usr/share/applications/Sequences-Extractor.desktop
 		sudo echo "[Desktop Entry]" > /usr/share/applications/Sequences-Extractor.desktop
 		sudo echo "Type=Application" >> /usr/share/applications/Sequences-Extractor.desktop
@@ -156,11 +162,7 @@ sudo echo > /usr/share/applications/Sequences-Extractor.desktop
 		sudo echo "Name=Seqs-Extractor " >> /usr/share/applications/Sequences-Extractor.desktop
 		sudo echo "Icon=/usr/local/sbin/seqs-extractor/seqs-extractor_icon.png" >> /usr/share/applications/Sequences-Extractor.desktop
 		sudo echo "Exec=/usr/local/sbin/SeqsExtractor" >> /usr/share/applications/Sequences-Extractor.desktop
-
-fi
-
-then
-	echo "${green}"
+	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
 	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
@@ -168,7 +170,7 @@ then
 	echo	""
 	echo	"Seqs-Extractor  INSTALLED SUCCESSFULLY!"
 else
-	echo "${red}"
+	echo "${r}"
 	echo	"________________________________________________________________________________"
 	echo 	""
 	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
@@ -176,7 +178,7 @@ else
 	echo	""
 	echo	"AN ERROR OCCURRED DURING THE INSTALLATION OF Seqs-Extractor!"
 fi
-fi
+
 
 
 if [ $inst_opt = "2" ]; then
@@ -199,7 +201,7 @@ sudo rm -f /usr/share/applications/Sequences-Extractor.desktop
 
 				
 clear
-	echo "${green}"
+	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
 	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
