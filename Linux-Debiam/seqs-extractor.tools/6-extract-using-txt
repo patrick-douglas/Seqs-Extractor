@@ -82,8 +82,13 @@ echo "${w}"
 			echo ""
 		echo "Enter the name of fasta file to run:"	
 		echo 	"${g}"
-			read fastafile
+			read fastafile_path
 		echo ""
+
+basename $fastafile_path > $work_dir/.fastafile_path.txt
+fastafile=`cat $work_dir/.fastafile_path.txt`
+rm -rf .fastafile_path.txt
+
 
 if [ -f $fastafile ];
 then
@@ -115,7 +120,7 @@ echo "${w}"
 			echo ""
 		echo "Enter the text file containing list of sequences that you want extract "
 		echo "${g}"
-			read list_file
+			read list_file_path
 		echo ""
 
 if [ -f $list_file ];
@@ -132,6 +137,12 @@ YOU TYPED ""${w}$list_file${r}""
 "
 done
 fi
+
+basename $list_file_path > $work_dir/.list_file_path.txt
+list_file=`cat $work_dir/.list_file_path.txt`
+rm -rf .list_file_path.txt
+
+
 clear
 
 		if 
