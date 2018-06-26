@@ -38,7 +38,7 @@ clear
 ${g} 1${w} to install Seqs-Extractor  and all required tools 
 ${g} 2${w} to uninstall Seqs-Extractor  and all required tools"
 		echo "${g}"
-		read inst_opt
+echo -n "" ; read -p "" -n 1 inst_opt
 		echo "${w}"
 
 if [ "$inst_opt" != "1" ] && [ "$inst_opt" != "2" ]
@@ -60,10 +60,22 @@ if [ $inst_opt = "1" ]; then
 #Set -j option during make process
 nproc > .cpu.txt
 	threads=`cat .cpu.txt`
+sudo apt-get update
 
 apt-get install build-essential libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev libcurl3-dev libssl-dev -y
 #INSTALL AND COPY FILES AND APPS
-sudo apt-get update
+
+#install other apps
+sudo apt-get install gedit -y
+sudo apt-get install libxml2-dev -y
+sudo apt-get install fort77 -y
+sudo apt-get install xorg-dev -y 
+sudo apt-get install liblzma-dev libblas-dev gfortran -y
+sudo apt-get install gcc-multilib -y
+sudo apt-get install gobjc++ -y
+sudo apt-get install libcurl4-gnutls-dev -y
+sudo apt-get install aptitude -y
+sudo aptitude install libreadline-dev -y
 
 #bzip
 tar -zxf samtools/bzip2-1.0.6.tar.gz -C samtools/
@@ -119,8 +131,6 @@ sudo apt-get purge ncbi-blast -y
 sudo apt-get purge blast2 -y
 sudo dpkg -i blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb
 
-#install other apps
-sudo apt-get install gedit -y
 
 sudo mkdir -p /usr/local/sbin/seqs-extractor
 
@@ -156,12 +166,29 @@ sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.pl
 sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.ini
 sudo chmod +x /usr/local/sbin/seqs-extractor/misa.pl
 sudo echo > /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "[Desktop Entry]" > /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "Type=Application" >> /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "Terminal=true" >> /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "Name=Seqs-Extractor " >> /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "Icon=/usr/local/sbin/seqs-extractor/seqs-extractor_icon.png" >> /usr/share/applications/Sequences-Extractor.desktop
-		sudo echo "Exec=/usr/local/sbin/SeqsExtractor" >> /usr/share/applications/Sequences-Extractor.desktop
+#Remove Blast binaries --> Start
+if [ -f blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb ];
+then
+echo	"${g}----------------------------------------------"
+echo	"Do you want remove ncbi-blast+-2.7.1 binaries?"
+echo -n	"Yes (y) or No (n) ${w}" ; read -p " " -n 1 remove_blast
+echo ""
+echo	"${g}----------------------------------------------"
+
+if	[ $remove_blast = "y" ]; then
+rm -rf blast+.tools
+else
+echo	""
+fi
+fi
+#Remove Blast binaries End <--
+	sudo echo "[Desktop Entry]" > /usr/share/applications/Sequences-Extractor.desktop
+	sudo echo "Type=Application" >> /usr/share/applications/Sequences-Extractor.desktop
+	sudo echo "Terminal=true" >> /usr/share/applications/Sequences-Extractor.desktop
+	sudo echo "Name=Seqs-Extractor " >> /usr/share/applications/Sequences-Extractor.desktop
+	sudo echo "Icon=/usr/local/sbin/seqs-extractor/seqs-extractor_icon.png" >> /usr/share/applications/Sequences-Extractor.desktop
+	sudo echo "Exec=/usr/local/sbin/SeqsExtractor" >> /usr/share/applications/Sequences-Extractor.desktop
+
 	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
@@ -178,8 +205,6 @@ else
 	echo	""
 	echo	"AN ERROR OCCURRED DURING THE INSTALLATION OF Seqs-Extractor!"
 fi
-
-
 
 if [ $inst_opt = "2" ]; then
 
