@@ -82,7 +82,8 @@ echo    "-----------------------------------------------------------------------
 ${g} 1${w} to run BLASTX
 ${g} 2${w} to run BLASTN"
 		echo "${g}"
-		read blast
+echo -n "" ; read -p "" -n 1 blast
+
 if [ "$blast" != "1" ] && [ "$blast" != "2" ]
 
 then
@@ -159,8 +160,9 @@ echo    "-----------------------------------------------------------------------
 	echo "${g} 1${w} to format a new database
 ${g} 2${w} to use a preexisting database"
 		echo "${g}"
-		read db_opt
+echo -n "" ; read -p "" -n 1 db_opt
 		echo "${w}"
+
 if [ "$db_opt" != "1" ] && [ "$db_opt" != "2" ]
 
 then
