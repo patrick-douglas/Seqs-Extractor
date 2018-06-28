@@ -6,6 +6,18 @@ g=$(tput setaf 2)
 o=$(tput setaf 8) 
 FILE="/tmp/out.$$"
 GREP="/bin/grep"
+
+if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+	echo "Connection OK${g}"
+else
+echo "Ouch!!!${r}"
+echo	"--------------------------------------------------------------------------------------------------------"
+echo	"You are OFFLINE, your computer need to be connected to the Internet to install updates and some packages"
+echo	"Without INTERNET connection the installation will no work"
+echo	"--------------------------------------------------------------------------------------------------------"
+exit 1
+fi
+
 if [[ $EUID -ne 0 ]]; then
 echo 	"${g}"
 echo	"________________________________________________________________________________"
