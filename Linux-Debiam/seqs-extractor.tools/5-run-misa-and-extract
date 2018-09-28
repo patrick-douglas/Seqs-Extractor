@@ -4,6 +4,7 @@ r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
 home_dir=$(echo ~/)
+seqs_extractor_path=/usr/local/sbin/seqs-extractor
 	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
@@ -101,8 +102,8 @@ done
 fi
 clear
 
-cp  /usr/local/sbin/misa.pl misa.pl
-chmod +x misa.pl
+cp  $seqs_extractor_path/misa.pl $work_dir/misa.pl
+chmod +x $work_dir/misa.pl
 
 if [ -f misa.ini ];
 then
@@ -117,7 +118,7 @@ mkdir -p misa.ini.custom
 cp misa.ini misa.ini.custom/misa.ini
 
 else
-cp /usr/local/sbin/seqs-extractor/misa.ini misa.ini
+cp /usr/local/sbin/seqs-extractor/misa.ini $work_dir/misa.ini
 
 echo "${w}"
 echo    "------------------------------------------------------------------"
@@ -145,8 +146,7 @@ spinner()
     printf "    \b\b\b\b"
 }
 
-( ./misa.pl $fastafile misa.ini ) &
-echo -n "Runing MISA, please wait... "
+( $work_dir/misa.pl $fastafile misa.ini ) &
 spinner $!
 echo " DONE!"
 
@@ -289,5 +289,5 @@ echo "${r}"
 	echo    "-------------------------------------------------------------------------------------------"
 	echo	""
 
-rm -rf .temp4 .$fastafile_name .$fastafile_name.fai misa.ini misa.pl 
+rm -rf .temp4 .$fastafile_name .$fastafile_name.fai misa.ini misa.pl $fastafile_name.MISA_extracted_seqs.fasta
 fi
