@@ -795,6 +795,7 @@ if
 	rm blast_result_list
 	rm temp3
 	rm temp4
+	rm -rf temp2_1
 mv	temp2 list_of_tophit-$pct_ident%.txt
 
 sed -i '1s/^/Query 	 Pct_ident\n/' list_of_tophit-$pct_ident%.txt
