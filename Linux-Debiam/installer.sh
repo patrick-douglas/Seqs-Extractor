@@ -178,22 +178,7 @@ sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.pl
 sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.ini
 sudo chmod +x /usr/local/sbin/seqs-extractor/misa.pl
 sudo echo > /usr/share/applications/Sequences-Extractor.desktop
-#Remove Blast binaries --> Start
-if [ -f blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb ];
-then
-echo	"${g}----------------------------------------------"
-echo	"Do you want remove ncbi-blast+-2.7.1 binaries?"
-echo -n	"Yes (y) or No (n) ${w}" ; read -p " " -n 1 remove_blast
-echo ""
-echo	"${g}----------------------------------------------"
-
-if	[ $remove_blast = "y" ]; then
 rm -rf blast+.tools
-else
-echo	""
-fi
-fi
-#Remove Blast binaries End <--
 	sudo echo "[Desktop Entry]" > /usr/share/applications/Sequences-Extractor.desktop
 	sudo echo "Type=Application" >> /usr/share/applications/Sequences-Extractor.desktop
 	sudo echo "Terminal=true" >> /usr/share/applications/Sequences-Extractor.desktop
