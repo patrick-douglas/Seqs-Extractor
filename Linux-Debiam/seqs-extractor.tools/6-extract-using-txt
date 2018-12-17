@@ -289,5 +289,7 @@ clear
 	"
 	echo    "-------------------------------------------------------------------------------------------"
 	echo	""
+rm -f $list_file_name.$fastafile_name.extracted_seqs.fasta .$fastafile_name.fai
+
 
 fi
