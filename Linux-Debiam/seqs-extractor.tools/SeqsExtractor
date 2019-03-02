@@ -11,7 +11,7 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 output_file=""
 verbose=0
 clear
-while getopts "h?12345678" opt; do
+while getopts "h?1234567d" opt; do
     case "$opt" in
     h|\?)
 echo "${g}"
@@ -33,7 +33,7 @@ echo "${g}"
 	echo " ${w} -5${g} to run MISA and perform extraction of sequences"
 	echo " ${w} -6${g} to extract using any text file (Please see the README.md)"
 	echo " ${w} -7${g} to customize${w} misa.ini${g} file (Please see the README.md)"
-	echo " ${w} -8${g} to download ${w} Example files${g} from SeqsExtractor SF repository"
+	echo " ${w} -d${g} to download ${w} Example files${g} from SeqsExtractor SF repository"
 echo	""
 	echo 	"----------------------------------------------------------------------------------------------${w}"
 	echo	" -h Show this help page,${g} more help here ${w}https://github.com/patrick-douglas/Seqs-Extractor/wiki${g}"
@@ -54,7 +54,7 @@ echo	""
         ;;
     7)  /usr/local/sbin/seqs-extractor/7-customize-misa.ini.file
         ;;
-    8)  wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/example_files/example_files.tar.gz --directory-prefix=example_files/
+    d)  wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/example_files/example_files.tar.gz --directory-prefix=example_files/
         ;;
     esac
 done
