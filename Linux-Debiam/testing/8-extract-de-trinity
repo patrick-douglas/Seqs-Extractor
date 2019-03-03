@@ -1,0 +1,156 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+USAGE="USAGE: $0 -i <Trinity.fasta> -d <trinity.de.folder> -o <outpu-directory>"
+
+if [ "$#" -lt "2" ] 
+then 
+    echo -e $USAGE;
+exit 1    
+else 
+    var1=$2;
+    var2=$4;
+fi
+
+while getopts i:o:d: option
+do
+case "${option}"
+in
+i) trinity_fasta=${OPTARG};;
+o) output_dir=$OPTARG;;
+d) trinity_de_dir=$OPTARG;;
+
+esac
+done
+
+if [ "$trinity_fasta" = "" ]; then
+"${g}Error, missing arguments:${y} -i | Trinity.fasta | <string>
+${w}$USAGE"
+exit 1
+fi
+if [ "$output_dir" = "" ]; then
+"${g}Error, missing arguments:${y} -o | Output directory for extracted seqs | <string>
+${w}$USAGE"
+exit 1
+fi
+if [ "$trinity_de_dir" = "" ]; then
+"${g}Error, missing arguments:${y} -d | Trinity DE folder | <string>
+${w}$USAGE"
+exit 1
+fi
+	echo "${g}"
+	echo	"________________________________________________________________________________"
+	echo 	""
+	echo    "______________________________ Seqs-Extractor __________________________________"
+	echo	"________________________________________________________________________________"
+	echo	""
+
+echo "Trinity fasta:${w}"
+echo "$trinity_fasta"
+echo ''
+echo "${g}Trinity DE folder:${w}"
+echo "$trinity_de_dir"
+echo ''
+echo "${g}Output folder:${w}"
+echo "$output_dir ${g}"
+	echo	"________________________________________________________________________________"
+
+cd $output_dir
+if [ $? -eq 0 ]
+then
+echo ''
+else
+echo "${r}
+-------------------------------------------------------------------------------------------
+ERROR ${w}$output_dir${r} 
+IS NOT A VALID DIRECTORY, PLEASE CHOOSE A VALID FOLDER AND TRY RUN THE Seqs-Extractor AGAIN,
+THIS COMMONLY OCCURS BECAUSE YOU ARE TRYING USE AND INVALID FOLDER OR A DIRECTORY THAT
+CONTAINS SPACES.
+${y}Example /home/lbn/teste dois/${r}
+THE FOLDER NAMES CAN NOT CONTAIN SPACES, YOU CAN REPLACE SPACES BY UNDERLINE 
+${y}Example /home/lbn/teste_dois/${r}
+-------------------------------------------------------------------------------------------"
+fi
+
+cp $trinity_de_dir/*UP.subset $output_dir
+cd $output_dir
+awk -F"\t" '{print $1}' *UP.subset > file
+ls | grep 'UP.subset' > list
+rm -rf *.subset
+awk '/sampleA/{n++}{print >"out." n "" }' file
+sed -i '/sampleA/d' out.*
+sed -i 's/^/>/' out.*
+paste -d' ' <(ls out.*) list | xargs -n2 mv
+cut -d . -f6,11,12 list > list2
+rm -rf file list
+paste -d' ' <(ls *UP.subset) list2 | xargs -n2 mv
+touch .ext_seq.sh && chmod +x .ext_seq.sh
+rm -rf list2
+echo '#!/bin/bash' > .ext_seq.sh
+echo 'file="$1"' >> .ext_seq.sh
+echo "cut -c 2- \$file | xargs -n 1 samtools faidx $trinity_fasta > \$file.ext.fa" >> .ext_seq.sh 
+
+
+
+									# Extraction of Trinity DE Genes
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+				echo "${w}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"Extracting sequences, just wait.			 "
+				echo 	"This may take a while and depends of database size. 	 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""
+#function of slash spin
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+( for file in *.subset; do ./.ext_seq.sh "$file"; done ) &
+echo -n "Running SAMTOOLS, please wait... "
+spinner $!
+echo " DONE!"
+cd $output_dir && rm -rf .ext_seq.sh trinity_fasta.fai *UP.subset
+rm -rf $trinity_fasta.fai
+
+echo 	"${w}"
+echo    "--------------------------------------------------------------------------------"
+echo	"		 	 Sequences successfully extracted!!!			 "
+echo    "--------------------------------------------------------------------------------"
+
+echo 	"${g}"
+echo	"===================================================================================================="
+echo 	""
+echo    "===================================== Seqs-Extractor 1.1 =========================================="
+echo 	""
+echo	"===================================================================================================="
+echo    "======================= Laboratório de Biologia Molecular e Neuroecologia =========================="
+echo	'=======================  INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança =========================='
+echo	"===================================================================================================="
+echo '				         ___        ______    __     __
+                                        |   |      |      \  |  \   |  | 
+                                        |   |      |   D   ) |   \  |  | 
+                                        |   |      |      /  |    \ |  | 
+                                        |   |____  |      \  |  |\ \|  | 
+                                        |        | |   D   ) |  | \    |  
+                                        |________| |______/  |__|  \___|
+'                   
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "-----------------------------------------------------------------------------------------------------"
+echo	"${y}NOTE: Results are available at${w} $output_dir${g}"
+echo    "-----------------------------------------------------------------------------------------------------"
