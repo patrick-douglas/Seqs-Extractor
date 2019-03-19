@@ -1,0 +1,92 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables:
+output_file=""
+verbose=0
+clear
+while getopts "h?1234567d" opt; do
+    case "$opt" in
+    h|\?)
+echo "${g}"
+	echo "${g}"
+	echo	"______________________________________________________________________________________________"
+	echo 	""
+	echo    "				  Seqs-Extractor 1.1 "
+	echo	"______________________________________________________________________________________________"
+	echo 	""
+	echo    "----------------------------------------------------------------------------------------------"
+	echo    "                  	       Choose one option bellow!"
+	echo    "----------------------------------------------------------------------------------------------"
+		echo ""
+	echo " ${w} -1${g} to perform a BLAST search" 
+	echo " ${w} -2${g} to perform extraction and BLAST"
+	echo " ${w} -3${g} to perform extraction without BLAST${y}" 
+	echo " (BLAST results file in tabular format is required${w} [outfmt6]${g}${y})${g}"
+	echo " ${w} -4${g} to perform extraction using MISA file"
+	echo " ${w} -5${g} to run MISA and perform extraction of sequences"
+	echo " ${w} -6${g} to extract using any text file (Please see the README.md)"
+	echo " ${w} -7${g} to customize${w} misa.ini${g} file (Please see the README.md)"
+	echo " ${w} -d${g} to download ${w} Example files${g} from SeqsExtractor SF repository"
+echo	""
+	echo 	"----------------------------------------------------------------------------------------------${w}"
+	echo	" -h Show this help page,${g} more help here ${w}https://github.com/patrick-douglas/Seqs-Extractor/wiki${g}"
+	echo 	"----------------------------------------------------------------------------------------------"
+        exit 0
+        ;;
+    1)  /usr/local/sbin/seqs-extractor/1-only_blast
+	;;
+    2)  /usr/local/sbin/seqs-extractor/2-blast-and-extract
+        ;;
+    3)  /usr/local/sbin/seqs-extractor/3-only-extract
+        ;;
+    4)  /usr/local/sbin/seqs-extractor/4-extract-from-misa
+        ;;
+    5)  /usr/local/sbin/seqs-extractor/5-run-misa-and-extract
+        ;;
+    6)  /usr/local/sbin/seqs-extractor/6-extract-using-txt
+        ;;
+    7)  /usr/local/sbin/seqs-extractor/7-customize-misa.ini.file
+        ;;
+    d)  wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/example_files/example_files.tar.gz --directory-prefix=example_files/
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+[ "$1" = "--" ] && shift
+if [ $# -eq 0 ];
+then
+echo "${g}"
+	echo "${g}"
+	echo	"______________________________________________________________________________________________"
+	echo 	""
+	echo    "				  Seqs-Extractor 1.1 "
+	echo	"______________________________________________________________________________________________"
+	echo 	""
+	echo    "----------------------------------------------------------------------------------------------"
+	echo    "                  	       Choose one option bellow!"
+	echo    "----------------------------------------------------------------------------------------------"
+		echo ""
+	echo " ${w} -1${g} to perform a BLAST search" 
+	echo " ${w} -2${g} to perform extraction and BLAST"
+	echo " ${w} -3${g} to perform extraction without BLAST${y}" 
+	echo " (BLAST results file in tabular format is required${w} [outfmt6]${g}${y})${g}"
+	echo " ${w} -4${g} to perform extraction using MISA file"
+	echo " ${w} -5${g} to run MISA and perform extraction of sequences"
+	echo " ${w} -6${g} to extract using any text file (Please see the README.md)"
+	echo " ${w} -7${g} to customize${w} misa.ini${g} file (Please see the README.md)"
+	echo " ${w} -8${g} to download ${w}Example files${g} from SeqsExtractor SF repository"
+echo	""
+	echo 	"----------------------------------------------------------------------------------------------${w}"
+	echo	" -h Show this help page,${g} more help here ${w}https://github.com/patrick-douglas/Seqs-Extractor/wiki${g}"
+	echo 	"----------------------------------------------------------------------------------------------"
+    exit 1
+fi

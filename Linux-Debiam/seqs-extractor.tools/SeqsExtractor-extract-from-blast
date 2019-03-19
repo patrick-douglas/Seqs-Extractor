@@ -1,0 +1,731 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+
+S=`basename $0`
+USAGE=`echo "USAGE:
+${g}Example:${w} $S -i query.fa -o /home/user/test -b new-arriv_wint_pre-mig_vs_ncbi_protein.blastx.outfmt6 -p 90-100
+
+Required arguments: 
+-i <string> | Query fasta
+-o <string> | Output directory
+-b <string> | Blast+ outfmt6 file
+-p <string  | Pct. of identity to_extract Sequences"`
+
+if [ "$#" -lt "1" ] 
+then 
+    echo $USAGE;
+exit 1    
+else 
+    var1=$2;
+    var2=$4;
+fi
+
+while getopts i:o:b:p: option
+do
+case "${option}"
+in
+i) query_fasta=${OPTARG};;
+o) output_dir=$OPTARG;;
+b) blast_result=$OPTARG;;
+p) pct_ident=$OPTARG;;
+esac
+done
+if [ "$query_fasta" = "" ]; then
+"${g}Error, missing arguments:${y} -i | Trinity.fasta | <string>
+${w}$USAGE"
+exit 1
+fi
+if [ "$output_dir" = "" ]; then
+"${g}Error, missing arguments:${y} -o | Output directory for extracted seqs | <string>
+${w}$USAGE"
+exit 1
+fi
+if [ "$blast_result" = "" ]; then
+"${g}Error, missing arguments:${y} -b | Blast+ outfmt6 file | string
+${w}$USAGE"
+exit 1
+fi
+if [ "$pct_ident" = "" ]; then
+"${g}Error, missing arguments:${y} -p <string  | Pct. of identity to_extract Sequences
+${w}$USAGE"
+exit 1
+fi
+						# ONLY EXTRACTION 
+
+echo "${g}"
+echo	"________________________________________________________________________________"
+echo 	""
+echo    "______________________________ Seqs-Extractor __________________________________"
+echo	"________________________________________________________________________________"
+echo	""
+
+echo "Query fasta:${w}"
+echo "$query_fasta"
+echo ''
+echo "${g}Blast outfmt6 file:${w}"
+echo "$blast_result"
+echo ''
+echo "${g}Pct. of identity to extract sequences:${w}"
+echo "$pct_ident ${g}"
+echo ''
+echo "${g}Output folder:${w}"
+echo "$output_dir ${g}"
+echo	"________________________________________________________________________________"
+
+#	PERCENTAGE OF IDENTITY  10 TO 100%
+cut -f1,3 $blast_result > .blast_result_list
+
+if [ $pct_ident = 10-100 ]
+then	
+	grep -F "10." .blast_result_list >> .temp2
+	grep -F "11." .blast_result_list >> .temp2
+	grep -F "12." .blast_result_list >> .temp2
+	grep -F "13." .blast_result_list >> .temp2
+	grep -F "14." .blast_result_list >> .temp2
+	grep -F "15." .blast_result_list >> .temp2
+	grep -F "16." .blast_result_list >> .temp2
+	grep -F "17." .blast_result_list >> .temp2
+	grep -F "18." .blast_result_list >> .temp2
+	grep -F "19." .blast_result_list >> .temp2
+	grep -F "20." .blast_result_list >> .temp2
+	grep -F "21." .blast_result_list >> .temp2
+	grep -F "22." .blast_result_list >> .temp2
+	grep -F "23." .blast_result_list >> .temp2
+	grep -F "24." .blast_result_list >> .temp2
+	grep -F "25." .blast_result_list >> .temp2
+	grep -F "26." .blast_result_list >> .temp2
+	grep -F "27." .blast_result_list >> .temp2
+	grep -F "28." .blast_result_list >> .temp2
+	grep -F "29." .blast_result_list >> .temp2
+	grep -F "30." .blast_result_list >> .temp2
+	grep -F "31." .blast_result_list >> .temp2
+	grep -F "32." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "34." .blast_result_list >> .temp2
+	grep -F "35." .blast_result_list >> .temp2
+	grep -F "36." .blast_result_list >> .temp2
+	grep -F "37." .blast_result_list >> .temp2
+	grep -F "38." .blast_result_list >> .temp2
+	grep -F "39." .blast_result_list >> .temp2
+	grep -F "40." .blast_result_list >> .temp2
+	grep -F "41." .blast_result_list >> .temp2
+	grep -F "42." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "44." .blast_result_list >> .temp2
+	grep -F "45." .blast_result_list >> .temp2
+	grep -F "46." .blast_result_list >> .temp2
+	grep -F "47." .blast_result_list >> .temp2
+	grep -F "48." .blast_result_list >> .temp2
+	grep -F "49." .blast_result_list >> .temp2
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  20 TO 100%
+if [ $pct_ident = 20-100 ]
+then	
+	grep -F "20." .blast_result_list >> .temp2
+	grep -F "21." .blast_result_list >> .temp2
+	grep -F "22." .blast_result_list >> .temp2
+	grep -F "23." .blast_result_list >> .temp2
+	grep -F "24." .blast_result_list >> .temp2
+	grep -F "25." .blast_result_list >> .temp2
+	grep -F "26." .blast_result_list >> .temp2
+	grep -F "27." .blast_result_list >> .temp2
+	grep -F "28." .blast_result_list >> .temp2
+	grep -F "29." .blast_result_list >> .temp2
+	grep -F "30." .blast_result_list >> .temp2
+	grep -F "31." .blast_result_list >> .temp2
+	grep -F "32." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "34." .blast_result_list >> .temp2
+	grep -F "35." .blast_result_list >> .temp2
+	grep -F "36." .blast_result_list >> .temp2
+	grep -F "37." .blast_result_list >> .temp2
+	grep -F "38." .blast_result_list >> .temp2
+	grep -F "39." .blast_result_list >> .temp2
+	grep -F "40." .blast_result_list >> .temp2
+	grep -F "41." .blast_result_list >> .temp2
+	grep -F "42." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "44." .blast_result_list >> .temp2
+	grep -F "45." .blast_result_list >> .temp2
+	grep -F "46." .blast_result_list >> .temp2
+	grep -F "47." .blast_result_list >> .temp2
+	grep -F "48." .blast_result_list >> .temp2
+	grep -F "49." .blast_result_list >> .temp2
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  30 TO 100%
+if [ $pct_ident = 30-100 ]
+then	
+	grep -F "30." .blast_result_list >> .temp2
+	grep -F "31." .blast_result_list >> .temp2
+	grep -F "32." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "34." .blast_result_list >> .temp2
+	grep -F "35." .blast_result_list >> .temp2
+	grep -F "36." .blast_result_list >> .temp2
+	grep -F "37." .blast_result_list >> .temp2
+	grep -F "38." .blast_result_list >> .temp2
+	grep -F "39." .blast_result_list >> .temp2
+	grep -F "40." .blast_result_list >> .temp2
+	grep -F "41." .blast_result_list >> .temp2
+	grep -F "42." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "44." .blast_result_list >> .temp2
+	grep -F "45." .blast_result_list >> .temp2
+	grep -F "46." .blast_result_list >> .temp2
+	grep -F "47." .blast_result_list >> .temp2
+	grep -F "48." .blast_result_list >> .temp2
+	grep -F "49." .blast_result_list >> .temp2
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  40 TO 100%
+if [ $pct_ident = 40-100 ]
+then	
+	grep -F "40." .blast_result_list >> .temp2
+	grep -F "41." .blast_result_list >> .temp2
+	grep -F "42." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "44." .blast_result_list >> .temp2
+	grep -F "45." .blast_result_list >> .temp2
+	grep -F "46." .blast_result_list >> .temp2
+	grep -F "47." .blast_result_list >> .temp2
+	grep -F "48." .blast_result_list >> .temp2
+	grep -F "49." .blast_result_list >> .temp2
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  50 TO 100%
+if [ $pct_ident = 50-100 ]
+then	
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  60 TO 100%
+if [ $pct_ident = 60-100 ]
+then	
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  70 TO 100%
+if [ $pct_ident = 70-100 ]
+then	
+	grep -F "70." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "72." .blast_result_list >> .temp2
+	grep -F "73." .blast_result_list >> .temp2
+	grep -F "74." .blast_result_list >> .temp2
+	grep -F "75." .blast_result_list >> .temp2
+	grep -F "76." .blast_result_list >> .temp2
+	grep -F "77." .blast_result_list >> .temp2
+	grep -F "78." .blast_result_list >> .temp2
+	grep -F "79." .blast_result_list >> .temp2
+	grep -F "80." .blast_result_list >> .temp2
+	grep -F "81." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  80 TO 100%
+if [ $pct_ident = 80-100 ]
+then	
+	grep -F "80." .blast_result_list >> .temp2
+	grep -F "81." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+#	PERCENTAGE OF IDENTITY  90 TO 100%
+if [ $pct_ident = 90-100 ]
+then	
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+	grep -F "100." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 10 ]
+then	
+	grep -F "10." .blast_result_list >> .temp2
+	grep -F "11." .blast_result_list >> .temp2
+	grep -F "12." .blast_result_list >> .temp2
+	grep -F "13." .blast_result_list >> .temp2
+	grep -F "14." .blast_result_list >> .temp2
+	grep -F "15." .blast_result_list >> .temp2
+	grep -F "16." .blast_result_list >> .temp2
+	grep -F "17." .blast_result_list >> .temp2
+	grep -F "18." .blast_result_list >> .temp2
+	grep -F "19." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 20 ]
+then	
+	grep -F "20." .blast_result_list >> .temp2
+	grep -F "21." .blast_result_list >> .temp2
+	grep -F "22." .blast_result_list >> .temp2
+	grep -F "23." .blast_result_list >> .temp2
+	grep -F "24." .blast_result_list >> .temp2
+	grep -F "25." .blast_result_list >> .temp2
+	grep -F "26." .blast_result_list >> .temp2
+	grep -F "27." .blast_result_list >> .temp2
+	grep -F "28." .blast_result_list >> .temp2
+	grep -F "29." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 30 ]
+then	
+	grep -F "30." .blast_result_list >> .temp2
+	grep -F "31." .blast_result_list >> .temp2
+	grep -F "32." .blast_result_list >> .temp2
+	grep -F "33." .blast_result_list >> .temp2
+	grep -F "34." .blast_result_list >> .temp2
+	grep -F "35." .blast_result_list >> .temp2
+	grep -F "36." .blast_result_list >> .temp2
+	grep -F "37." .blast_result_list >> .temp2
+	grep -F "38." .blast_result_list >> .temp2
+	grep -F "39." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 40 ]
+then	
+	grep -F "40." .blast_result_list >> .temp2
+	grep -F "41." .blast_result_list >> .temp2
+	grep -F "42." .blast_result_list >> .temp2
+	grep -F "43." .blast_result_list >> .temp2
+	grep -F "44." .blast_result_list >> .temp2
+	grep -F "45." .blast_result_list >> .temp2
+	grep -F "46." .blast_result_list >> .temp2
+	grep -F "47." .blast_result_list >> .temp2
+	grep -F "48." .blast_result_list >> .temp2
+	grep -F "49." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 50 ]
+then	
+	grep -F "50." .blast_result_list >> .temp2
+	grep -F "51." .blast_result_list >> .temp2
+	grep -F "52." .blast_result_list >> .temp2
+	grep -F "53." .blast_result_list >> .temp2
+	grep -F "54." .blast_result_list >> .temp2
+	grep -F "55." .blast_result_list >> .temp2
+	grep -F "56." .blast_result_list >> .temp2
+	grep -F "57." .blast_result_list >> .temp2
+	grep -F "58." .blast_result_list >> .temp2
+	grep -F "59." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 60 ]
+then	
+	grep -F "60." .blast_result_list >> .temp2
+	grep -F "61." .blast_result_list >> .temp2
+	grep -F "62." .blast_result_list >> .temp2
+	grep -F "63." .blast_result_list >> .temp2
+	grep -F "64." .blast_result_list >> .temp2
+	grep -F "65." .blast_result_list >> .temp2
+	grep -F "66." .blast_result_list >> .temp2
+	grep -F "67." .blast_result_list >> .temp2
+	grep -F "68." .blast_result_list >> .temp2
+	grep -F "69." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 70 ]
+then	
+	grep -F "70." .blast_result_list >> .temp2
+	grep -F "71." .blast_result_list >> .temp2
+	grep -F "72." .blast_result_list >> .temp2
+	grep -F "73." .blast_result_list >> .temp2
+	grep -F "74." .blast_result_list >> .temp2
+	grep -F "75." .blast_result_list >> .temp2
+	grep -F "76." .blast_result_list >> .temp2
+	grep -F "77." .blast_result_list >> .temp2
+	grep -F "78." .blast_result_list >> .temp2
+	grep -F "79." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 80 ]
+then	
+	grep -F "80." .blast_result_list >> .temp2
+	grep -F "81." .blast_result_list >> .temp2
+	grep -F "82." .blast_result_list >> .temp2
+	grep -F "83." .blast_result_list >> .temp2
+	grep -F "84." .blast_result_list >> .temp2
+	grep -F "85." .blast_result_list >> .temp2
+	grep -F "86." .blast_result_list >> .temp2
+	grep -F "87." .blast_result_list >> .temp2
+	grep -F "88." .blast_result_list >> .temp2
+	grep -F "89." .blast_result_list >> .temp2
+
+fi
+
+if [ $pct_ident = 90 ]
+then	
+	grep -F "90." .blast_result_list >> .temp2
+	grep -F "91." .blast_result_list >> .temp2
+	grep -F "92." .blast_result_list >> .temp2
+	grep -F "93." .blast_result_list >> .temp2
+	grep -F "94." .blast_result_list >> .temp2
+	grep -F "95." .blast_result_list >> .temp2
+	grep -F "96." .blast_result_list >> .temp2
+	grep -F "97." .blast_result_list >> .temp2
+	grep -F "98." .blast_result_list >> .temp2
+	grep -F "99." .blast_result_list >> .temp2
+fi
+
+if [ $pct_ident = 100 ]
+then	
+	grep -F "100." .blast_result_list > .temp2
+
+fi
+
+if [ $pct_ident = all ]
+then	
+	cp .blast_result_list .temp2
+fi
+
+#Remove duplicated IDs
+sort -u .temp2 > .temp2_1
+rm -rf .temp2 
+cat .temp2_1 > .temp2
+
+cut -f1 .temp2 > .temp3			
+sed 's/^/>/' .temp3 > .temp4
+	
+		if 
+				if			
+				echo "${w}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"Extracting sequences, just wait.			 "
+				echo 	"This may take a while and depends of dataset size. 	 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""
+#Change the entire path to only last name
+pathname=$query_fasta
+query_fasta_name=`echo $(basename $pathname)`
+#sed 's|len.*||' $query_fasta > .fasta
+#function of slash spin
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+( cut -c 2- .temp4 | xargs -n 1 samtools faidx $query_fasta > seqs_only_the_tophit_$pct_ident%_$query_fasta_name ) &
+echo -n "Running SAMTOOLS, please wait... "
+spinner $!
+echo " DONE!"
+					then
+						echo " "
+					else
+						echo -e "setf 4" | tput -S  # set fg red
+						echo	"ERROR!"
+						echo	"PLEASE VERIFY IF THE COMMANDS AND NAME OF fiLES ARE CORRECT!!!!"
+						function pause(){
+						read -p "$*"
+						}
+						echo -e "setf 4" | tput -S
+						pause 'Press [Enter] key to finish the script'
+						exit 1
+					fi
+			then 
+				echo "${g}"
+				echo    "--------------------------------------------------------------------------------"
+				echo	"		 	 Sequences successfully extracted!!!			 "
+				echo    "--------------------------------------------------------------------------------"
+				echo	""
+		fi			
+
+if	
+	rm $query_fasta.fai
+	rm .blast_result_list
+	rm .temp3
+	rm .temp4
+	rm -rf .temp2_1
+mv	.temp2 list_of_tophit-$pct_ident%.txt
+
+sed -i '1s/^/Query 	 Pct_ident\n/' list_of_tophit-$pct_ident%.txt
+
+then	
+		echo "${g}"
+	echo    "--------------------------------------------------------------------------------"
+	echo	"			Temporary files successfully deleted!!!			 "
+	echo    "--------------------------------------------------------------------------------"
+	echo	""
+	echo	""
+	
+else
+	echo -e "setf 4" | tput -S  # set fg red
+	echo	"ERROR WHILE TRY DELETE TEMPORARY fiLES!"
+	
+fi
+
+if [ -s seqs_only_the_tophit_$pct_ident%_$query_fasta_name ] 
+then
+
+
+    
+echo -e "setf 8" | tput -S  # set fg green
+echo	"================================================================================"
+echo 	""
+echo    "============================ Seqs-Extractor 1.1 ================================"
+echo 	""
+echo	"================================================================================"
+echo    "============= Laboratório de Biologia Molecular e Neuroecologia ================"
+echo	'============== INSTITUTO FEDERAL DO PARÁ (IFPA) Campus Bragança ================'
+echo	"================================================================================"
+echo '				 ___        ______    __     __
+				|   |      |	  \  |  \   |  | 
+				|   |      |   D   ) |   \  |  | 
+				|   |      |      /  |    \ |  | 
+				|   |____  |      \  |  |\ \|  | 
+				|        | |   D   ) |  | \    |  
+				|________| |______/  |__|  \___|
+'                     
+echo	"All commands completed successfully"
+echo	":D"
+echo	"Support by E-mail to patrick@ufpa.br"
+echo	""
+echo    "--------------------------------------------------------------------------------"
+echo	"The extracted sequences are written in${w} seqs_only_the_tophit_$pct_ident%_$query_fasta_name ${g}"    
+echo	"The file${w} list_of_tophit-$pct_ident%.txt${g} contain the list of $pct_ident%${g}"
+echo    "${y}NOTE: Results are available at${w} $selected_dir${g}"
+echo    "--------------------------------------------------------------------------------"
+
+
+else
+clear
+     		echo "${r}"
+	echo    "-------------------------------------------------------------------------------------------
+"
+	echo	"No sequences with $pct_ident% was found, please try again by changing your search criteria!
+	"
+	echo    "-------------------------------------------------------------------------------------------"
+	echo	""
+rm -f seqs_only_the_tophit_$pct_ident%_$query_fasta.fasta
+rm -f list_of_tophit-$pct_ident%.txt
+fi

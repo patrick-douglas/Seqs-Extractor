@@ -3,9 +3,10 @@ w=$(tput sgr0)
 r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
-USAGE="USAGE: $0 -i <Trinity.fasta> -d <trinity.de.folder> -o <outpu-directory>"
+S=`basename $0`
+USAGE="USAGE: $S -i <Trinity.fasta> -d <trinity.de.folder> -o <output-directory>"
 
-if [ "$#" -lt "2" ] 
+if [ "$#" -lt "3" ] 
 then 
     echo -e $USAGE;
 exit 1    

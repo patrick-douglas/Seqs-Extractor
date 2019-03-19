@@ -47,8 +47,8 @@ clear
 		echo ""
 	echo "Choose an option bellow:
 
-${g} 1${w} to install Seqs-Extractor  and all required tools 
-${g} 2${w} to uninstall Seqs-Extractor  and all required tools"
+${g} 1${w} to install Seqs-Extractor and all required tools 
+${g} 2${w} to uninstall Seqs-Extractor and all required tools"
 		echo "${g}"
 echo -n "" ; read -p "" -n 1 inst_opt
 		echo "${w}"
@@ -78,7 +78,7 @@ apt-get install build-essential libncurses5-dev zlib1g-dev libbz2-dev liblzma-de
 #INSTALL AND COPY FILES AND APPS
 
 #install other apps
-sudo apt-get install gedit -y
+sudo apt-get install xed -y
 sudo apt-get install libxml2-dev -y
 sudo apt-get install fort77 -y
 sudo apt-get install xorg-dev -y 
@@ -129,62 +129,49 @@ rm -rf samtools/samtools-1.8
 rm -rf config.h config.log config.mk config.status Makefile debug lib po src tests Doxyfile libtool stamp-h1 htslib.pc.tmp .cpu.txt htslib.pc.tmp
 
 #Reinstall BLAST+------------------------------------------
-if [ -f blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb ];
+if [ -f blast+.tools/ncbi-blast_2.8.1+-3_amd64.deb ];
 then
 	echo ""
 else
 mkdir -p blast+.tools
-wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/Linux-Debiam/blast%2B.tools/ncbi-blast_2.7.1%2B-2_amd64.deb --directory-prefix=blast+.tools/
+wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/Linux-Debiam/blast%2B.tools/ncbi-blast_2.8.1%2B-3_amd64.deb --directory-prefix=blast+.tools/
 echo	" "
 fi
 #Reinstall BLAST+------------------------------------------
-sudo apt-get purge ncbi-blast+ -y
-sudo apt-get purge ncbi-blast -y
-sudo apt-get purge blast2 -y
-sudo dpkg -i blast+.tools/ncbi-blast_2.7.1+-2_amd64.deb
+sudo apt-get purge ncbi-blast* -y
+sudo dpkg -i blast+.tools/ncbi-blast_2.8.1+-3_amd64.deb
+sudo rm -rf blast+.tools
 
+sudo cp seqs-extractor.tools/SeqsExtractor-blast-and-extract /usr/local/sbin/SeqsExtractor-blast-and-extract
+sudo chmod +x /usr/local/sbin/SeqsExtractor-blast-and-extract
 
-sudo mkdir -p /usr/local/sbin/seqs-extractor
+sudo cp seqs-extractor.tools/SeqsExtractor-extract-de-trinity /usr/local/sbin/SeqsExtractor-extract-de-trinity
+sudo chmod +x /usr/local/sbin/SeqsExtractor-extract-de-trinity
 
-sudo cp seqs-extractor.tools/1-only_blast /usr/local/sbin/seqs-extractor/1-only_blast
-sudo chmod +x /usr/local/sbin/seqs-extractor/1-only_blast
+sudo cp seqs-extractor.tools/SeqsExtractor-extract-from-blast /usr/local/sbin/SeqsExtractor-extract-from-blast
+sudo chmod +x /usr/local/sbin/SeqsExtractor-extract-from-blast
 
-sudo cp seqs-extractor.tools/2-blast-and-extract /usr/local/sbin/seqs-extractor/2-blast-and-extract
-sudo chmod +x /usr/local/sbin/seqs-extractor/2-blast-and-extract
+sudo cp seqs-extractor.tools/SeqsExtractor-extract-from-misa /usr/local/sbin/SeqsExtractor-extract-from-misa
+sudo chmod +x /usr/local/sbin/SeqsExtractor-extract-from-misa
 
-sudo cp seqs-extractor.tools/3-only-extract /usr/local/sbin/seqs-extractor/3-only-extract
-sudo chmod +x /usr/local/sbin/seqs-extractor/3-only-extract
+sudo cp seqs-extractor.tools/SeqsExtractor-run-misa-and-extract /usr/local/sbin/SeqsExtractor-run-misa-and-extract
+sudo chmod +x /usr/local/sbin/SeqsExtractor-run-misa-and-extract
 
-sudo cp seqs-extractor.tools/4-extract-from-misa /usr/local/sbin/seqs-extractor/4-extract-from-misa
-sudo chmod +x /usr/local/sbin/seqs-extractor/4-extract-from-misa
+sudo cp seqs-extractor.tools/SeqsExtractor-customize-misa /usr/local/sbin/SeqsExtractor-customize-misa
+sudo chmod +x /usr/local/sbin/SeqsExtractor-customize-misa
 
-sudo cp seqs-extractor.tools/5-run-misa-and-extract /usr/local/sbin/seqs-extractor/5-run-misa-and-extract
-sudo chmod +x /usr/local/sbin/seqs-extractor/5-run-misa-and-extract
-
-sudo cp seqs-extractor.tools/6-extract-using-txt /usr/local/sbin/seqs-extractor/6-extract-using-txt
-sudo chmod +x /usr/local/sbin/seqs-extractor/6-extract-using-txt
-
-sudo cp seqs-extractor.tools/7-customize-misa.ini.file /usr/local/sbin/seqs-extractor/7-customize-misa.ini.file
-sudo chmod +x /usr/local/sbin/seqs-extractor/7-customize-misa.ini.file
+sudo cp seqs-extractor.tools/SeqsExtractor-extract-using-txt /usr/local/sbin/SeqsExtractor-extract-using-txt
+sudo chmod +x /usr/local/sbin/SeqsExtractor-extract-using-txt
 
 sudo cp seqs-extractor.tools/SeqsExtractor /usr/local/sbin/SeqsExtractor
 sudo chmod +x /usr/local/sbin/SeqsExtractor
 sudo chmod -f 777 -R /usr/local/sbin/SeqsExtractor
-sudo cp seqs-extractor.tools/seqs-extractor_icon.png /usr/local/sbin/seqs-extractor/
 
-sudo cp misa.tools/misa.pl /usr/local/sbin/seqs-extractor/misa.pl
-sudo cp misa.tools/misa.ini /usr/local/sbin/seqs-extractor/misa.ini
-sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.pl
-sudo chmod -f 777 -R /usr/local/sbin/seqs-extractor/misa.ini
-sudo chmod +x /usr/local/sbin/seqs-extractor/misa.pl
-sudo echo > /usr/share/applications/Sequences-Extractor.desktop
-rm -rf blast+.tools
-	sudo echo "[Desktop Entry]" > /usr/share/applications/Sequences-Extractor.desktop
-	sudo echo "Type=Application" >> /usr/share/applications/Sequences-Extractor.desktop
-	sudo echo "Terminal=true" >> /usr/share/applications/Sequences-Extractor.desktop
-	sudo echo "Name=Seqs-Extractor " >> /usr/share/applications/Sequences-Extractor.desktop
-	sudo echo "Icon=/usr/local/sbin/seqs-extractor/seqs-extractor_icon.png" >> /usr/share/applications/Sequences-Extractor.desktop
-	sudo echo "Exec=/usr/local/sbin/SeqsExtractor" >> /usr/share/applications/Sequences-Extractor.desktop
+sudo cp misa.tools/misa.pl /usr/local/sbin/misa.pl
+sudo cp misa.tools/misa.ini /usr/local/sbin/misa.ini
+sudo chmod -f 777 -R /usr/local/sbin/misa.pl
+sudo chmod -f 777 -R /usr/local/sbin/misa.ini
+sudo chmod +x /usr/local/sbin/misa.pl
 
 	echo "${g}"
 	echo	"________________________________________________________________________________"
@@ -209,18 +196,21 @@ if [ $inst_opt = "2" ]; then
 sudo apt-get update
 
 ##Uninstall samtools
-#sudo apt-get purge samtools -y
-#rm -f /usr/local/bin/samtools
-#rm -f /usr/local/bin/samtools.pl
+sudo apt-get purge samtools -y
+rm -f /usr/local/bin/samtools
+rm -f /usr/local/bin/samtools.pl
 
 #Reinstall BLAST+
 sudo apt-get purge ncbi-blast+ -y
 sudo apt-get purge ncbi-blast -y
-
+sudo rm -rf /usr/local/sbin/SeqsExtractor-blast-and-extract
+sudo rm -rf /usr/local/sbin/SeqsExtractor-extract-de-trinity
+sudo rm -rf /usr/local/sbin/SeqsExtractor-extract-from-blast
+sudo rm -rf /usr/local/sbin/SeqsExtractor-extract-from-misa
+sudo rm -rf /usr/local/sbin/SeqsExtractor-run-misa-and-extract
+sudo rm -rf /usr/local/sbin/SeqsExtractor-customize-misa
+sudo rm -rf /usr/local/sbin/SeqsExtractor-extract-using-txt
 sudo rm -rf /usr/local/sbin/SeqsExtractor
-sudo rm -rf /usr/local/sbin/seqs-extractor/
-sudo rm -f /usr/share/applications/Sequences-Extractor.desktop
-
 				
 clear
 	echo "${g}"
@@ -232,7 +222,7 @@ clear
 	echo	"UNINSTALLATION SUCCESSFULLY"
 	echo	"Apps removed: Seqs-Extractor, ncbi-blast+, samtools, MISA"
 
-		fi
+fi
 
 rm -rf config.h config.log config.mk config.status Makefile debug lib po src tests Doxyfile libtool stamp-h1 htslib.pc.tmp .cpu.txt
 
