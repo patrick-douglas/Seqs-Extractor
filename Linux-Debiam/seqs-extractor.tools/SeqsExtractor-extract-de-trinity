@@ -4,7 +4,12 @@ r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
 S=`basename $0`
-USAGE="USAGE: $S -i <Trinity.fasta> -d <trinity.de.folder> -o <output-directory>"
+USAGE="USAGE: $S -i <Trinity.fasta> -d <trinity.de.folder> -o <output-directory>
+Required arguments: 
+-i <string> | Query fasta
+-l <string> | List of sequences 
+-o <string> | Output directory"
+
 
 if [ "$#" -lt "3" ] 
 then 
