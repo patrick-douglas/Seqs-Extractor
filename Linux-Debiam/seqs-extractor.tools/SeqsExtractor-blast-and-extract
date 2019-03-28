@@ -16,7 +16,7 @@ Required arguments:
 -p <string  | Pct. of identity to_extract Sequences
 
 Optional arguments: 
--b <string>     | Default 1e-3 
+-e <string>     | Default 1e-3 
 -t <interger>   | Default: $cpu
 -a <string>     | Blast+ optional parameters. E.g. '-max_target_seqs 1 -import_search_strategy filename' (Use between quotes!)"`
 
