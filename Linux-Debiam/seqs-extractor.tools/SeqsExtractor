@@ -3,13 +3,24 @@ w=$(tput sgr0)
 r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
-clear
+
 while getopts "d" opt; do
     case "$opt" in
     h|\?)
 echo ''
         ;;
-d)  wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/example_files/example_files.tar.gz --directory-prefix=example_files/
+d)  
+	echo	"${g}_________________________________________________________________________________________________________"
+	echo 	""
+	echo    "				            Seqs-Extractor"
+	echo	"_________________________________________________________________________________________________________"
+	echo 	""
+	echo    "---------------------------------------------------------------------------------------------------------${w}"
+wget https://ufpr.dl.sourceforge.net/project/seqs-extractor/example_files/example_files.tar.gz --directory-prefix=example_files/
+	echo    "${g}---------------------------------------------------------------------------------------------------------"
+
+
+
         ;;
 esac
 done
