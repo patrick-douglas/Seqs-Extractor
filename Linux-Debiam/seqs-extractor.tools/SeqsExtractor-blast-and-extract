@@ -236,11 +236,11 @@ fi
 fastafile=`basename $query_fasta`
 
 #Replace _ by +
-sed 's/_/+/g' $fastafile > .tmp
+#sed 's/_/+/g' $fastafile > .tmp
 
 #Replace spaces by underline
-sed 's/ /_/g' .tmp > .fastafile.no_spaces
-rm -rf .tmp
+#sed 's/ /_/g' .tmp > .fastafile.no_spaces
+#rm -rf .tmp
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo 	"${w}"
@@ -292,7 +292,7 @@ spinner()
     printf "    \b\b\b\b"
 }
 
-( $blast_0 -query .fastafile.no_spaces -db $BLASTdb -out $blast_0-evalue_$BLAST_evalue -evalue $BLAST_evalue -num_threads $threads -outfmt 6 $other_blast_param ) &
+( $blast_0 -query $fastafile -db $BLASTdb -out $blast_0-evalue_$BLAST_evalue -evalue $BLAST_evalue -num_threads $threads -outfmt 6 $other_blast_param ) &
 echo -n "Running${g} $BLASTname${w}, please wait... "
 spinner $!
 echo " DONE!"
@@ -851,7 +851,7 @@ spinner()
     printf "    \b\b\b\b"
 }
 
-( cut -c 2- .blast_res_filt_col_no_dup_simb | xargs -n 1 samtools faidx .fastafile.no_spaces > .seqs_only_the_tophit_tmp ) &
+( cut -c 2- .blast_res_filt_col_no_dup_simb | xargs -n 1 samtools faidx $fastafile > .seqs_only_the_tophit_tmp ) &
 echo -n "Running SAMTOOLS, please wait... "
 spinner $!
 echo " DONE!"
@@ -873,7 +873,7 @@ cat .blast-evalue > $blast_0-evalue_$BLAST_evalue
 rm -rf .blast-evalue
 
 #Clean temporary files
-rm -rf .blast_res_filt_col .blast_res_filt_col_no_dup .blast_res_filt_nspaces .fastafile.no_spaces.fai .fastafile.no_spaces
+rm -rf .blast_res_filt_col .blast_res_filt_col_no_dup .blast_res_filt_nspaces .fastafile.no_spaces.fai .fastafile.no_spaces $fastafile.fai
 
 then 
 echo 	"${w}"
