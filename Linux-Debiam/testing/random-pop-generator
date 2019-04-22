@@ -1,0 +1,84 @@
+#!/bin/bash
+w=$(tput sgr0) 
+r=$(tput setaf 1)
+g=$(tput setaf 2) 
+y=$(tput setaf 3) 
+S=`basename $0`
+USAGE=`echo "USAGE:
+${g}Example:${w} $S -i <input_dataset> -n <5> -r <10>
+Required arguments: 
+-i <string> | Query fasta
+-n <int>    | number of lines to get 
+-r <int>    | number of relicates to get"`
+
+while getopts i:n:r: option
+do
+case "${option}"
+in
+i) db_input=${OPTARG};;
+n) num_lines=$OPTARG;;
+r) num_repli=$OPTARG;;
+esac
+done
+
+if [ "$db_input" = "" ]; then
+"${g}Error, missing arguments:${y} -i | input dataset | <string>
+${w}$USAGE"
+exit 1
+fi
+if [ "$num_lines" = "" ]; then
+"${g}Error, missing arguments:${y} -n | number of lines to get | <int>
+${w}$USAGE"
+exit 1
+fi
+if [ "$num_repli" = "" ]; then
+"${g}Error, missing arguments:${y} -r | number of replicates to create | <int>
+${w}$USAGE"
+exit 1
+fi
+echo "${y}_________________________________"
+echo "Random population generator v-1.0"
+echo "_________________________________${g}"
+echo ''
+echo "${g}---------------------------------"
+echo "Input dataset:"
+echo "---------------------------------${w}"
+echo "$db_input"
+echo ''
+echo "${g}---------------------------------"
+echo "Number of samples:"
+echo "---------------------------------${w}"
+echo "$num_lines"
+echo ''
+echo "${g}---------------------------------"
+echo "Number of replicates:"
+echo "---------------------------------${w}"
+echo "$num_repli"
+echo "${g}---------------------------------"
+
+
+
+
+
+echo '#!/bin/bash' > .temp.sh
+echo 'file="$1"' >> .temp.sh
+echo "shuf -n $num_lines $db_input > \$file" >> .temp.sh
+chmod +x .temp.sh
+echo "touch {1..$num_repli}.replica.txt" > .01.sh
+chmod +x .01.sh
+./.01.sh
+for file in *.replica.txt; do ./.temp.sh "$file"; done
+num_coll=`head -n1 $db_input | grep -o " " | wc -l`
+sed -i "1 i Pop" *.replica.txt
+echo "touch {1..$num_coll}.locus" > .01.sh
+chmod +x .01.sh
+./.01.sh
+echo '#!/bin/bash' > .sed.sh
+echo 'file="$1"' >> .sed.sh
+echo 'sed -i "1 i $file" *.replica.txt' >> .sed.sh
+chmod +x .sed.sh
+for file in *.locus; do ./.sed.sh "$file"; done
+sed -i "1 i $db_input" *.replica.txt
+rm -rf .01.sh .temp.sh *.locus .sed.sh
+
+

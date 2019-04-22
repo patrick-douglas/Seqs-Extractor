@@ -116,11 +116,20 @@ exit 1
 fi
 
 									# BLAST AND EXTRACTION 
+BLASTname=""
+if [ $BLAST = "x" ]; then
+	BLASTname="blastx"
+fi
+
+if [ $BLAST = "n" ]; then
+	BLASTname="blastn"
+fi
+
 
 echo    "${g}---------------------------------"
 echo    "Blast search:"
 echo    "---------------------------------${w}"
-	echo "$BLAST"
+	echo "$BLASTname"
 
 if [ "$BLAST" != "n" ] && [ "$BLAST" != "x" ]
 
@@ -134,15 +143,6 @@ ERROR ${w}$BLAST${r} IS NOT A VALID OPTION, PLEASE CHOOSE A VALID OPTION!
 -------------------------------------------------------------
 "
 done
-fi
-
-BLASTname=""
-if [ $BLAST = "x" ]; then
-	BLASTname="BLASTX"
-fi
-
-if [ $BLAST = "n" ]; then
-	BLASTname="BLASTN"
 fi
 
 echo        "${g}---------------------------------"

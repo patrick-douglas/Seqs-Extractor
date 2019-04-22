@@ -47,8 +47,8 @@ clear
 		echo ""
 	echo "Choose an option bellow:
 
-${g} 1${w} to install Seqs-Extractor and all required tools 
-${g} 2${w} to uninstall Seqs-Extractor and all required tools"
+${g} 1${w} to install SeqsExtractor and all required tools 
+${g} 2${w} to uninstall SeqsExtractor and all required tools"
 		echo "${g}"
 echo -n "" ; read -p "" -n 1 inst_opt
 		echo "${w}"

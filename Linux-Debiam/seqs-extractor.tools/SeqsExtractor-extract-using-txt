@@ -6,12 +6,14 @@ y=$(tput setaf 3)
 S=`basename $0`
 cpu=`nproc`
 USAGE=`echo "USAGE:
-${g}Example:${w} $S -i query.fa -l list_of_seqs.txt -o /home/user/test'
+${g}Example:${w} $S -i query.fa -l list_of_seqs.txt -o /home/user/test
 
 Required arguments: 
 -i <string> | Query fasta
 -l <string> | List of sequences 
--o <string> | Output directory"`
+-o <string> | Output directory
+Optional arguments:
+-a <y or n> | Keep additional info in the seqs ID (Default n)"`
 
 if [ "$#" -lt "3" ] 
 then 
@@ -22,13 +24,14 @@ else
     var2=$4;
 fi
 
-while getopts i:l:o: option
+while getopts i:l:o:a: option
 do
 case "${option}"
 in
 i) fasta=${OPTARG};;
 l) list_file_path=$OPTARG;;
 o) output_dir=$OPTARG;;
+a) keep_add_info=$OPTARG;;
 esac
 done
 if [ "$fasta" = "" ]; then
@@ -46,7 +49,6 @@ if [ "$output_dir" = "" ]; then
 ${w}$USAGE"
 exit 1
 fi
-
 	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
@@ -90,6 +92,21 @@ fi
 	echo    "---------------------------------${w}"
 echo "$output_dir ${g}"
 cd $output_dir
+
+if [ "$keep_add_info" = "y" ]; then
+keep_addtional=Yes
+else
+keep_addtional=No
+echo "" 
+fi
+
+
+	echo "${g}"
+	echo    "---------------------------------"
+	echo    "Keep addtional info in the seq IDs?"
+	echo    "---------------------------------${w}"
+echo "$keep_addtional ${g}"
+
 if [ $? -eq 0 ]
 then
 echo ""
@@ -117,7 +134,7 @@ fi
 				echo "${w}"
 				echo    "--------------------------------------------------------------------------------"
 				echo	"Extracting sequences, just wait.			 "
-				echo 	"This may take a while and depends on the size of your database. 	 "
+				echo 	"This may take a while and depends of database size. 	 "
 				echo    "--------------------------------------------------------------------------------"
 
 				echo	""
@@ -125,6 +142,18 @@ fi
 list_file=`basename $list_file_path`
 #Change the entire path to only last name
 fastaname=`basename $fasta`
+
+if [ "$keep_add_info" = "" ]; then
+echo ""
+elif [ "$keep_add_info" = "n" ]; then
+echo ""
+else
+#Replace spaces by +
+sed -e 's/\s\+/*/g' $list_file_path > .list.file.path.no.spaces
+sed -e 's/\s\+/*/g' $fasta > .fasta.no.spaces
+list_file_path=.list.file.path.no.spaces
+fasta=.fasta.no.spaces
+fi
 
 #function of slash spin
 spinner()
@@ -145,6 +174,7 @@ spinner()
 echo -n "Running SAMTOOLS, please wait... "
 spinner $!
 echo " DONE!"
+sed -i -e 's/*\+/ /g' $fastaname.$list_file.ext_seqs.fa
 					then
 						echo " "
 					else
@@ -164,9 +194,9 @@ echo " DONE!"
 				echo	"		 	 Sequences successfully extracted!!!			 "
 				echo    "--------------------------------------------------------------------------------"
 				echo	""
-rm -rf $fasta.fai
+rm -rf $fasta.fai .list.file.path.no.spaces .fasta.no.spaces
 		fi			
-rm -rf $fasta.fai
+rm -rf $fasta.fai .list.file.path.no.spaces .fasta.no.spaces
 
 
 if [ -s $fastaname.$list_file.ext_seqs.fa ] 
