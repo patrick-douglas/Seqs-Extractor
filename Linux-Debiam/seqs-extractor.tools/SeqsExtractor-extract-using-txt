@@ -134,7 +134,7 @@ fi
 				echo "${w}"
 				echo    "--------------------------------------------------------------------------------"
 				echo	"Extracting sequences, just wait.			 "
-				echo 	"This may take a while and depends of database size. 	 "
+				echo 	"This may take a while and depends on the database size. 	 "
 				echo    "--------------------------------------------------------------------------------"
 
 				echo	""
