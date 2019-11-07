@@ -144,9 +144,11 @@ list_file=`basename $list_file_path`
 fastaname=`basename $fasta`
 
 if [ "$keep_add_info" = "" ]; then
-echo ""
+sed 's/\s.*$//' $list_file_path > .no_add_info.list
+list_file_path=.no_add_info.list
 elif [ "$keep_add_info" = "n" ]; then
-echo ""
+sed 's/\s.*$//' $list_file_path > .no_add_info.list
+list_file_path=.no_add_info.list
 else
 #Replace spaces by +
 sed -e 's/\s\+/*/g' $list_file_path > .list.file.path.no.spaces
@@ -237,6 +239,6 @@ else
 	"
 	echo    "-------------------------------------------------------------------------------------------"
 	echo	""
-rm -f $list_file_name.$fastafile_name.extracted_seqs.fasta .$fastafile_name.fai
+rm -f $list_file_name.$fastafile_name.extracted_seqs.fasta .$fastafile_name.fai .no_add_info.list
 
 fi
