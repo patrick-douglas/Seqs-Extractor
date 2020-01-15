@@ -188,7 +188,7 @@ echo "${y}*******************"
 echo 'Blast'
 echo "*******************${w}"
 apt-fast install alien -y -qq
-blast_url=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-*+-1.x86_64.rpm
+blast_url=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-*.x86_64.rpm
 wget $blast_url
 alien -v -d *.rpm
 dpkg -i *.deb
