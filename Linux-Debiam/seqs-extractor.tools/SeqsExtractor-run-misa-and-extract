@@ -4,7 +4,7 @@ r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
 home_dir=$(echo ~/)
-seqs_extractor_path=/usr/local/sbin/seqs-extractor
+seqs_extractor_path=/usr/local/sbin/
 	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
@@ -38,7 +38,7 @@ fi
 cd $work_dir
 if [ $? -eq 0 ]
 then
-clear
+echo ''
 else
 echo "${r}
 -------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ fi
 
 					# RUN MISA AND PERFORM SEQUENCES EXTRACTION
 
-clear
+echo ''
 echo "${g}"
 echo	"________________________________________________________________________________"
 echo 	""
@@ -100,7 +100,7 @@ YOU TYPED ""${w}$fastafile${r}""
 "
 done
 fi
-clear
+echo ''
 
 cp  $seqs_extractor_path/misa.pl $work_dir/misa.pl
 chmod +x $work_dir/misa.pl
@@ -118,7 +118,7 @@ mkdir -p misa.ini.custom
 cp misa.ini misa.ini.custom/misa.ini
 
 else
-cp /usr/local/sbin/seqs-extractor/misa.ini $work_dir/misa.ini
+cp $seqs_extractor_path/misa.ini $work_dir/misa.ini
 
 echo "${w}"
 echo    "------------------------------------------------------------------"
@@ -280,7 +280,7 @@ echo    "-----------------------------------------------------------------------
 
 
 else
-clear
+echo ''
 echo "${r}"
 	echo    "-------------------------------------------------------------------------------------------
 "
