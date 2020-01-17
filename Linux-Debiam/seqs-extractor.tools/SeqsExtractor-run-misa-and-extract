@@ -156,39 +156,19 @@ echo $(basename $pathname) > .fastafile_name.txt
 fastafile_name=`cat .fastafile_name.txt`
 rm -rf .fastafile_name.txt
 
-#Replace spaces by underline in the fasta file
-sed 's/ /_/g' $fastafile_name > .temp0
-
-#replace ' by #
-sed "s/'/#/g" .temp0 > .$fastafile_name 
-rm -rf .temp0
-
-
-#Replace spaces by underline
-sed 's/ /_/g' $fastafile_name.misa > .misa_results_file_name
-
 #extracts only the first colum thats contains the IDs
-cut -f1 .misa_results_file_name > .temp0
-rm -rf .misa_results_file_name
+cut -f1 $fastafile_name.misa > .temp0
 
 #Remove first line
-sed '1d' .temp0 > .temp1			
-rm -rf .temp0
-#Remove duplicated IDs
-sort -u .temp1 > .temp2
-rm -rf .temp1
+sed -i '1d' .temp0 
 
-#replace ' by #
-sed "s/'/#/g" .temp2 > .temp3
-rm -rf .temp2
+#Remove duplicated IDs
+sort -u .temp0 > .temp1 && rm -rf .temp0
 
 #add > in the start
-sed 's/^/>/' .temp3 > .temp4
-rm -rf .temp3
+sed -i 's/^/>/' .temp1
+sed -i 's/\s.*$//' .temp1
 
-#Remove first line empty
-#sed '1d' .temp3 > .temp4
-#rm -rf .temp3
 
 
 if			
@@ -215,17 +195,13 @@ spinner()
     printf "    \b\b\b\b"
 }
 
-( cut -c 2- .temp4 | xargs -n 1 samtools faidx .$fastafile_name > $fastafile_name.MISA_extracted_seqs.fasta ) &
+( cut -c 2- .temp1 | xargs -n 1 samtools faidx $fastafile_name > $fastafile_name.MISA_extracted_seqs.fasta ) &
 echo -n "Running SAMTOOLS, please wait... "
 spinner $!
 echo " DONE!"
 then
-
+rm -rf .temp1 $fastafile_name.fai
 #replace # by '
-sed "s/#/'/g" $fastafile_name.MISA_extracted_seqs.fasta > $fastafile_name.MISA_extracted_seqs.fasta.tmp 
-rm -rf $fastafile_name.MISA_extracted_seqs.fasta
-cat $fastafile_name.MISA_extracted_seqs.fasta.tmp > $fastafile_name.MISA_extracted_seqs.fasta
-rm -rf $fastafile_name.MISA_extracted_seqs.fasta.tmp
 
 				echo "${g}"
 				echo    "--------------------------------------------------------------------------------"
