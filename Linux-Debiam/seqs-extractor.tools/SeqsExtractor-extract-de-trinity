@@ -7,7 +7,7 @@ S=`basename $0`
 USAGE="USAGE: $S -i <Trinity.fasta> -d <trinity.de.folder> -o <output-directory>
 Required arguments: 
 -i <string> | Query fasta
--l <string> | List of sequences 
+-d <string> | Trinity DE folder 
 -o <string> | Output directory"
 
 
