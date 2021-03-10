@@ -7,7 +7,7 @@ S=`basename $0`
 USAGE=`echo "USAGE:
 ${g}Example:${w} $S -i <input_dataset> -n <5> -r <10>
 Required arguments: 
--i <string> | Query fasta
+-i <string> | data set
 -n <int>    | number of lines to get 
 -r <int>    | number of relicates to get"`
 
@@ -56,26 +56,25 @@ echo "---------------------------------${w}"
 echo "$num_repli"
 echo "${g}---------------------------------"
 
-
 echo '#!/bin/bash' > .temp.sh
 echo 'file="$1"' >> .temp.sh
-echo "shuf -n $num_lines $db_input > \$file" >> .temp.sh
+echo "shuf -r -n $num_lines $db_input > \$file" >> .temp.sh
 chmod +x .temp.sh
-echo "touch {1..$num_repli}.replica.gen" > .01.sh
+echo "touch {1..$num_repli}.replica.txt" > .01.sh
 chmod +x .01.sh
 ./.01.sh
-for file in *.replica.gen; do ./.temp.sh "$file"; done
+for file in *.replica.txt; do ./.temp.sh "$file"; done
 num_coll=`head -n1 $db_input | grep -o " " | wc -l`
-sed -i "1 i Pop" *.replica.gen
+sed -i "1 i Pop" *.replica.txt
 echo "touch {1..$num_coll}.locus" > .01.sh
 chmod +x .01.sh
 ./.01.sh
 echo '#!/bin/bash' > .sed.sh
 echo 'file="$1"' >> .sed.sh
-echo 'sed -i "1 i $file" *.replica.gen' >> .sed.sh
+echo 'sed -i "1 i $file" *.replica.txt' >> .sed.sh
 chmod +x .sed.sh
 for file in *.locus; do ./.sed.sh "$file"; done
-sed -i "1 i $db_input" *.replica.gen
+sed -i "1 i $db_input" *.replica.txt
 rm -rf .01.sh .temp.sh *.locus .sed.sh
-
-
+mkdir -p $num_lines 
+mv *.txt $num_lines 
