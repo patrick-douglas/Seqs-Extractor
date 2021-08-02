@@ -4,12 +4,12 @@ r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
 S=`basename $0`
-USAGE=`echo "USAGE:
+USAGE='USAGE:
 ${g}Example:${w} $S -i <input_dataset> -n <5> -r <10>
 Required arguments: 
 -i <string> | data set
 -n <int>    | number of lines to get 
--r <int>    | number of relicates to get"`
+-r <int>    | number of relicates to get'
 
 while getopts i:n:r: option
 do
@@ -22,18 +22,18 @@ esac
 done
 
 if [ "$db_original" = "" ]; then
-"${g}Error, missing arguments:${y} -i | input dataset | <string>
-${w}$USAGE"
+echo "${g}Error, missing arguments:${y} -i | input dataset | <string>"
+echo "$USAGE"
 exit 1
 fi
 if [ "$num_lines" = "" ]; then
-"${g}Error, missing arguments:${y} -n | number of lines to get | <int>
-${w}$USAGE"
+echo "${g}Error, missing arguments:${y} -n | number of lines to get | <int>"
+echo "$USAGE"
 exit 1
 fi
 if [ "$num_repli" = "" ]; then
-"${g}Error, missing arguments:${y} -r | number of replicates to create | <int>
-${w}$USAGE"
+echo "${g}Error, missing arguments:${y} -r | number of replicates to create | <int>"
+echo "$USAGE"
 exit 1
 fi
 echo "${y}_________________________________"
