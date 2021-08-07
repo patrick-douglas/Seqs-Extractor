@@ -68,9 +68,9 @@ max_samp=`cat .db_input | wc -l`
 if [ $num_lines -gt $max_samp ]
     then
     echo "${y}"
-    echo "----------------------------------------------------------------------------------------------"
-    echo " ${y}Error, the maximum number of samples is${w} $max_samp${y}, change the parameter -n to a value less than ${w}$max_samp"
-    echo "${y}----------------------------------------------------------------------------------------------"
+    echo "------------------------------------------------------------------------------------------------"
+    echo " ${y}Error, the maximum number of samples is${w} $max_samp${y}, change the parameter -n to a value less or equal ${w}$max_samp"
+    echo "${y}------------------------------------------------------------------------------------------------"
     echo "${w}"
     rm -rf .01.sh .temp.sh *.locus .sed.sh .pop .db_input
     exit 1
@@ -100,5 +100,6 @@ sed -i "1 i .db_input" *.replica.txt
 mkdir -p $num_lines 
 sed -i '1d' *.txt
 sed -i -e '2{x;G};1{h;r.pop' -e 'd}' *.replica.txt
-mv *.replica.txt $num_lines 
+mv *.replica.txt $num_lines
+sed -i '1 i\Title line:""' $num_lines/*.txt
 rm -rf .01.sh .temp.sh *.locus .sed.sh .pop .db_input
