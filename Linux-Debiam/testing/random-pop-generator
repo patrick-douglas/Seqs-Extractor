@@ -80,7 +80,7 @@ fi
 
 echo '#!/bin/bash' > .temp.sh
 echo 'file="$1"' >> .temp.sh
-echo "shuf -r -n $num_lines .db_input > \$file" >> .temp.sh
+echo "shuf -n $num_lines .db_input > \$file" >> .temp.sh
 chmod +x .temp.sh
 echo "touch {1..$num_repli}.replica.txt" > .01.sh
 chmod +x .01.sh
