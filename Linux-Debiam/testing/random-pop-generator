@@ -4,12 +4,12 @@ r=$(tput setaf 1)
 g=$(tput setaf 2) 
 y=$(tput setaf 3) 
 S=`basename $0`
-USAGE='USAGE:
+USAGE="USAGE:
 ${g}Example:${w} $S -i <input_dataset> -n <5> -r <10>
 Required arguments: 
 -i <string> | data set
 -n <int>    | number of lines to get 
--r <int>    | number of relicates to get'
+-r <int>    | number of relicates to get"
 
 while getopts i:n:r: option
 do
