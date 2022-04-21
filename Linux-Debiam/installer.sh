@@ -27,7 +27,7 @@ echo    "______________________________ Seqs-Extractor 1.0 _____________________
 echo	"________________________________________________________________________________"
 echo 	""
 	echo ""
-   echo "${r}ERROR: THIS SCRIPT MUST BE RUN AS ROOT" 1>&2
+   echo "${r}ERROR: THIS SCRIPT REQUIRES ROOT PRIVILEGES" 1>&2
 	echo ""
    exit 1
 fi
