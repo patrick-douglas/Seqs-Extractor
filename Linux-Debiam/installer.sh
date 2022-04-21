@@ -49,7 +49,12 @@ clear
 
 ${g} 1${w} to install SeqsExtractor and all required tools 
 ${g} 2${w} to uninstall SeqsExtractor and all required tools"
-		echo "${g}"
+echo ''
+echo ' -------------------------------------'
+echo "${y} Ctrl+C${w} to cancel installation process"
+echo ' -------------------------------------'
+
+echo "${g}"
 echo -n "" ; read -p "" -n 1 inst_opt
 		echo "${w}"
 
