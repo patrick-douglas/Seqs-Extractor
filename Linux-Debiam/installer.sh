@@ -245,6 +245,7 @@ sudo cp misa.tools/misa.ini /usr/local/sbin/misa.ini
 sudo chmod -f 777 -R /usr/local/sbin/misa.pl
 sudo chmod -f 777 -R /usr/local/sbin/misa.ini
 sudo chmod +x /usr/local/sbin/misa.pl
+rm -rf ncbi-*
 
 
 	echo "${g}"
