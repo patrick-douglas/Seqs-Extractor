@@ -76,12 +76,12 @@ if [ $inst_opt = "1" ]; then
 
 #Set -j option during make process
 threads=`nproc`
-sudo apt-get update -qq
+sudo apt-get update 
 apt-get install build-essential libncurses5-dev zlib1g-dev libbz2-dev liblzma-dev libcurl3-dev libssl-dev -y
 
 #INSTALL AND COPY FILES AND APPS
 #install other apps
-sudo apt-get install xed libcurl3 -y
+sudo apt-get install xed libcurl3 curl -y
 sudo apt-get install libxml2-dev -y
 sudo apt-get install fort77 -y
 sudo apt-get install xorg-dev -y 
@@ -180,19 +180,23 @@ blastversion=`blastx -version | grep blastx | awk '{printf $2}'`
 
 if ! command -v blastx &> /dev/null
 then
-echo "${y}**********************"
-echo 'Installing ncbi-blast+'
-echo "**********************${w}"
-apt-get purge -y ncbi-blast
-apt-fast install alien -y -qq
-wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-*.x86_64.rpm
-alien -v -d *.rpm
-dpkg -i *.deb
-rm -rf ncbi-blast-*.rpm ncbi-blast*.deb
-blastx -version | grep Package
-rm -rf .blastver
-else
 
+echo "${y}*******************"
+echo 'ncbi-blast+'
+echo "*******************${w}"
+apt-fast install alien -y
+blast_url=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-*.x86_64.rpm
+wget $blast_url
+echo "${y}**************************************************************"
+echo "Creating a ncbi-blast+ .deb file, this may take a long time..."
+echo "**************************************************************${w}"
+alien -v -d *.rpm
+echo "${y}************************************************"
+echo "instaling ncbi-blast+, this may take a long time"
+echo "************************************************${w}"
+dpkg -i *.deb
+rm -rf ~/ncbi-blast-*.rpm ~/ncbi-blast*.deb
+else
 if [ "$blastversionscript" == "$blastversion" ]; then
 blastx -version
 else
@@ -204,7 +208,7 @@ apt-fast install alien -y -qq
 wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-*.x86_64.rpm
 alien -v -d *.rpm
 dpkg -i *.deb
-rm -rf ncbi-blast-*.rpm ncbi-blast*.deb
+rm -rf ncbi-*.rpm ncbi*.deb
 blastx -version | grep Package
 rm -rf .blastver
 fi
@@ -242,6 +246,7 @@ sudo chmod -f 777 -R /usr/local/sbin/misa.pl
 sudo chmod -f 777 -R /usr/local/sbin/misa.ini
 sudo chmod +x /usr/local/sbin/misa.pl
 
+
 	echo "${g}"
 	echo	"________________________________________________________________________________"
 	echo 	""
@@ -249,15 +254,13 @@ sudo chmod +x /usr/local/sbin/misa.pl
 	echo	"________________________________________________________________________________"
 	echo	""
 	echo	"Seqs-Extractor  INSTALLED SUCCESSFULLY!"
-
-else
-	echo "${r}"
-	echo	"________________________________________________________________________________"
-	echo 	""
-	echo    "______________________________ Seqs-Extractor 1.0 ______________________________"
-	echo	"________________________________________________________________________________"
-	echo	""
-	echo	"AN ERROR OCCURRED DURING THE INSTALLATION OF Seqs-Extractor!"
+	echo	"INSTALLED VERSIONS!"
+    echo    ""
+paste <(echo "${g}XZ utils   ${w}") <(xz -V | grep xz | awk '{print $4}')
+paste <(echo "${g}bcftools   ${w}") <(bcftools --version | grep bcftools | awk '{print $2}')
+paste <(echo "${g}htslib   ${w}") <(samtools --version | grep htslib | awk '{print $3}' | grep .)
+paste <(echo "${g}samtools${w}") <(samtools --version | grep samtools | awk '{print $2}')
+paste <(echo "${g}ncbi-blast+  ${w}") <(blastx -version | grep Pack | awk '{print $NF}' FS=': ' | awk '{print $2}' | sed 's/,//')
 fi
 
 if [ $inst_opt = "2" ]; then
