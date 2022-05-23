@@ -1,0 +1,21 @@
+#!/bin/bash
+./random-pop-generator -i AraripeManakin.db -n 5 -r 100
+./random-pop-generator -i AraripeManakin.db -n 10 -r 100
+./random-pop-generator -i AraripeManakin.db -n 15 -r 100
+./random-pop-generator -i AraripeManakin.db -n 20 -r 100
+./random-pop-generator -i AraripeManakin.db -n 25 -r 100
+./random-pop-generator -i AraripeManakin.db -n 30 -r 100
+./random-pop-generator -i AraripeManakin.db -n 35 -r 100
+./random-pop-generator -i AraripeManakin.db -n 40 -r 100
+./random-pop-generator -i AraripeManakin.db -n 45 -r 100
+./random-pop-generator -i AraripeManakin.db -n 50 -r 100
+./random-pop-generator -i AraripeManakin.db -n 55 -r 100
+./random-pop-generator -i AraripeManakin.db -n 60 -r 100
+./random-pop-generator -i AraripeManakin.db -n 65 -r 100
+./random-pop-generator -i AraripeManakin.db -n 70 -r 100
+./random-pop-generator -i AraripeManakin.db -n 75 -r 100
+./random-pop-generator -i AraripeManakin.db -n 80 -r 100
+./random-pop-generator -i AraripeManakin.db -n 85 -r 100
+./random-pop-generator -i AraripeManakin.db -n 90 -r 100
+./random-pop-generator -i AraripeManakin.db -n 95 -r 100
+./random-pop-generator -i AraripeManakin.db -n 100 -r 100
