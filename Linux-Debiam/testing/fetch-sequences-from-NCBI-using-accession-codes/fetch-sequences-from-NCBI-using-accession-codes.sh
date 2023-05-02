@@ -48,8 +48,12 @@ cat $acc_lst | sed -e 's/^/esearch -db nucleotide -query "/' > .download_$acc_ls
 sed -e 's/$/" | efetch -format fasta > /' -i .download_$acc_lst.sh
 sed ':a;N;$!ba;s/\r//g' -i .download_$acc_lst.sh
 cat .download_$acc_lst.sh | awk -F " " '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,"."$5".fa.tmp"}' > .2download_$acc_lst.sh
-chmod +x .2download_$acc_lst.sh
-
+rm .download_$acc_lst.sh
+sed -e 's/$/ \&\& cat /' .2download_covid_teste.txt.sh | awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$11," >> .main_fasta.tmp.fasta","&& rm "$11}' > .3download_$acc_lst.sh
+rm .2download_$acc_lst.sh
+chmod +x .3download_$acc_lst.sh
+rm -rf .main_fasta.tmp.fasta
+#exit 1
 spinner()
 {
     local pid=$1
@@ -65,26 +69,9 @@ spinner()
     printf "    \b\b\b\b"
 }
 
-( ./.2download_$acc_lst.sh ) &
+( ./.3download_$acc_lst.sh ) &
 echo -n "> Fetching seqs from NCBI, please wait... "
 spinner $!
 echo " DONE!"
-cat .*.fa.tmp > $acc_lst.fasta
-rm .2download_$acc_lst.sh .download_$acc_lst.sh 
-rm -rf .*.fa.tmp
+mv .main_fasta.tmp.fasta $acc_lst.fasta
 echo "> Generated a single FASTA file: $acc_lst.fasta"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
