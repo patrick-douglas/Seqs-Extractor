@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #Este script é executado atraves de um script primario
 w=$(tput sgr0) 
@@ -13,12 +14,13 @@ else
     var1=$2;
 fi
 
-while getopts b:l: option
+while getopts b:l:f: option
 do
 case "${option}"
 in
 b) b2go_table=$OPTARG;;
 l) GO_full_list=$OPTARG;;
+f) term_filter=$OPTARG;;
 esac
 done
 
@@ -33,9 +35,36 @@ fi
 #b2go_table=blast2go_table.txt
 #GO_full_list=goterms.txt
 b2go_table_name=`echo $b2go_table | awk -F "." '{print $1}'`
-cat $b2go_table | awk -F "\t" '{print $6}' | sed -r 's/, /\n/g' > .blast2go_GO_tables.txt
 
-cat $GO_full_list | grep -f .blast2go_GO_tables.txt > $b2go_table_name.GO.full_names.txt
+cat $b2go_table | sed '/SeqName/d' | grep GO | awk -F "\t" '{print $3,$10}' | sed -r 's/P://g' | sed -r 's/C://g' | sed -r 's/F://g' | sed -r 's/; /\n/g' | sed -r 's/ /\n/g' > .blast2go_GO_tables.txt
+csplit -s -f .Seq -z .blast2go_GO_tables.txt /TRINITY/ '{*}'
+
+for f in .Seq*
+    do
+    f1=$(head -n1 "$f")
+    mv -n "$f" "$f1"
+    done
+
+for f in TRINITY*
+    do
+    sed -i '1d' "$f"
+    done
+
+for f in TRINITY*
+    do
+    awk '{print FILENAME (NF?" ":"") $0}' "$f" > $f.ids
+    done
+cat *.ids > .blast2go_GO_tables.txt 
+rm -rf TRINI* .Seq*
+sed -i -r 's/ /\t/g' .blast2go_GO_tables.txt
+
+b2g_go=`cat .blast2go_GO_tables.txt | awk '{print $2}'`
+cat $GO_full_list | grep "$b2g_go" > $b2go_table_name.GO.full_names.txt
 rm .blast2go_GO_tables.txt 
+
+if [ "$term_filter" = "" ]; then
 cat $b2go_table_name.GO.full_names.txt
+else 
+cat $b2go_table_name.GO.full_names.txt | grep $term_filter
+fi
 
