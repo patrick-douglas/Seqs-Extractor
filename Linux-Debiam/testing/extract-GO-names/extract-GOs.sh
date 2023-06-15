@@ -60,11 +60,31 @@ sed -i -r 's/ /\t/g' .blast2go_GO_tables.txt
 
 b2g_go=`cat .blast2go_GO_tables.txt | awk '{print $2}'`
 cat $GO_full_list | grep "$b2g_go" > $b2go_table_name.GO.full_names.txt
-rm .blast2go_GO_tables.txt 
+cat $b2go_table_name.GO.full_names.txt | awk -F "\t" '{print $1}'> $b2go_table_name.GO.IDs.txt
 
+#
 if [ "$term_filter" = "" ]; then
 cat $b2go_table_name.GO.full_names.txt
-else 
-cat $b2go_table_name.GO.full_names.txt | grep $term_filter
+else
+cat $b2go_table_name.GO.full_names.txt | grep $term_filter > .term_filter.txt
+cat .blast2go_GO_tables.txt | grep -f .term_filter.txt
+cat .term_filter.txt
+cat .term_filter.txt > $b2go_table_name.GO.full_names.terms.filtered.txt
+cat .term_filter.txt | awk -F "\t" '{print $1}' > $b2go_table_name.GO.IDs.terms.filtered.txt
 fi
+rm -rf .term_filter.txt .blast2go_GO_tables_2-1.txt .blast2go_GO_tables.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

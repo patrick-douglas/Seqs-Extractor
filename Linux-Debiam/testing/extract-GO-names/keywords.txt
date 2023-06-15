@@ -1,0 +1,31 @@
+Key-word	Go-ID	Go-name	Gene-Symbol	Trinity-ID	group
+ketone body catabolic process	GO:0046951	ketone body biosynthetic process	ZNF703	TRINITY_DN37072_c0_g1_i1	recently_arrived_up_subset
+ketone body biosynthetic process;	GO:0046952	ketone body catabolic process			recently_arrived_up_subset
+lipid biosynthetic process					
+molting cycle					
+neurogenesis					
+GFAP synthesis					
+Radial Glia					
+radial glia					
+DCX					
+Doublecortin					
+doublecortin					
+BDNF					
+bdnf					
+Irisin					
+irisin					
+BDNF receptor gene					
+NLRP3					
+IFN type I					
+IL-6					
+TNF-alfa					
+TNF					
+IL-1beta					
+IL-10					
+NFK-beta					
+NFK					
+caspase-1					
+pyroptosis					
+ATF4					
+NLRP3					
+neuron migration					
